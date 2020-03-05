@@ -4,12 +4,11 @@
 namespace App\Tests\Controller;
 
 
-use App\DataFixtures\BrandsFixtures;
-use App\DataFixtures\PhonesFixtures;
+use App\DataFixtures\UsersFixtures;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class PhoneControllerTest extends WebTestCase
+class UserControllerTest extends WebTestCase
 {
     use FixturesTrait;
     protected $client;
@@ -18,22 +17,22 @@ class PhoneControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->loadFixtures([BrandsFixtures::class, PhonesFixtures::class]);
+        $this->loadFixtures([UsersFixtures::class]);
     }
 
     /**
-     * @dataProvider urlProviderPhone
+     * @dataProvider urlProviderUser
      */
-    public function testTargetShowPhone($url)
+    public function testTargetShowUsers($url)
     {
         $this->client->request('GET', $url);
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 
-    public function urlProviderPhone()
+    public function urlProviderUser()
     {
-        yield ['/show'];
-        yield ['/show/2'];
+        yield ['/user/all'];
+        yield ['/user/2'];
     }
 
 }

@@ -3,10 +3,8 @@
 namespace App\DataFixtures;
 
 use App\Entity\Brand;
-use App\Entity\Phone;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Nelmio\Alice\Faker\Provider\AliceProvider;
 use Nelmio\Alice\Loader\NativeLoader;
 
 class PhonesFixtures extends Fixture
@@ -17,8 +15,8 @@ class PhonesFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-            $phonesObject = $this->phoneFactory();
-            foreach ($phonesObject->getObjects() as $phone){
+            $phones = $this->phoneFactory();
+            foreach ($phones->getObjects() as $phone){
                 $phone->setBrand($this->defineBrand());
                 $manager->persist($phone);
             }

@@ -18,11 +18,10 @@ class PhoneController extends AbstractController
     /**
      *@Route("/show/{id}", name="phone_show_one", methods={"GET"})
      */
-    public function showOne(Phone $phone, PhoneRepository $repository, SerializerInterface $serializer)
+    public function showOne(Phone $phone, SerializerInterface $serializer)
     {
         $datas = $serializer->serialize($phone, 'json', SerializationContext::create()->setGroups('detail'));
         return new JsonResponse($datas, 200, [], true);
-
     }
 
     /**
