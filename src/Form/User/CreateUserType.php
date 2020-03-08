@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\User;
 
-use App\Form\DTO\UserDTO;
+use App\Form\User\DTO\UserDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserType extends AbstractType
+class CreateUserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -23,6 +23,8 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => UserDTO::class,
+            'csrf_protection' => false,
+            'validation_groups'=> ['Default', 'Create']
         ]);
     }
 }
