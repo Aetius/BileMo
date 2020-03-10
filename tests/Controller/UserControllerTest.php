@@ -110,6 +110,9 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(200,  $this->client->getResponse()->getStatusCode());
     }
 
+
+
+////////TODO : faire le listener pour récupérer la 404
     public function testUpdateUserPathNOK()
     {
         $user =$this->findLastUser($this->client);

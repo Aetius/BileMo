@@ -23,22 +23,12 @@ class UserController extends AbstractController
 {
 
     /**
-     *@Route("/user/all", name="user_show_all", methods={"GET"})
-     */
-    public function showAll(SerializerInterface $serializer, UserRepository $repository)
-    {
-        $users = $repository->findAll();
-        $datas = $serializer->serialize($users, 'json', SerializationContext::create()->setGroups('list'));
-        return new JsonResponse($datas, 200, [], true);
-    }
-
-    /**
-     *@Route("/user/{id}", name="user_show_one", methods={"GET"})
+     *@Route("/users/{id}", name="user_show_one", methods={"GET"})
      */
     public function showOne(User $user, SerializerInterface $serializer)
     {
         $datas = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups('detail'));
-        return new JsonResponse($datas, 200, [], true);
+        return new JsonResponse($datas, Response::HTTP_OK, [], true);
     }
 
     /**
@@ -47,11 +37,11 @@ class UserController extends AbstractController
     public function delete(User $user, UserService $service)
     {
         $service->delete($user);
-        return new Response(null, '204');
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
-     *@Route("/user/{id}", name="user_update_one", methods={"PATCH"})
+     *@Route("/users/{id}", name="user_update_one", methods={"PUT"})
      */
     public function update(User $user, SerializerInterface $serializer, Request $request, UserService $service,
                            ErrorsService $errorsService)
@@ -61,19 +51,21 @@ class UserController extends AbstractController
         $form->submit($post);
 
         if ($form->isSubmitted() && $form->isValid()){
+            //$form->getErrors(true, true);
+
             $user = $service->update($form->getData(), $user);
             $service->save($user);
             $datas = $serializer->serialize($user, 'json');
-            return new JsonResponse($datas, 200, [], true);
+            return new JsonResponse($datas, Response::HTTP_OK, [], true);
         }
 
         $errors = $errorsService->define($form->getData());
         $datas = $serializer->serialize($errors, 'json');
-        return new JsonResponse($datas, 400, [], true);
+        return new JsonResponse($datas, Response::HTTP_BAD_REQUEST, [], true);
     }
 
     /**
-     *@Route("/user/new", name="user_create", methods={"POST"})
+     *@Route("/users/create", name="user_create", methods={"POST"})
      */
     public function create(Request $request, SerializerInterface $serializer, UserService $service, ErrorsService $errorsService)
     {
@@ -85,16 +77,24 @@ class UserController extends AbstractController
             $user = $service->create($form->getData());
             $service->save($user);
             $datas = $serializer->serialize($user, 'json');
-            return new JsonResponse($datas, 201, [], true);
+            return new JsonResponse($datas, Response::HTTP_CREATED, [], true);
         }
 
         $errors = $errorsService->define($form->getData());
         $datas = $serializer->serialize($errors, 'json');
-        return new JsonResponse($datas, 400, [], true);
+        return new JsonResponse($datas, Response::HTTP_BAD_REQUEST, [], true);
     }
 
 
-
+    /**
+     *@Route("/users", name="user_show_all", methods={"GET"})
+     */
+    public function showAll(SerializerInterface $serializer, UserRepository $repository)
+    {
+        $users = $repository->findAll();
+        $datas = $serializer->serialize($users, 'json', SerializationContext::create()->setGroups('list'));
+        return new JsonResponse($datas, Response::HTTP_OK, [], true);
+    }
 
 
 }
