@@ -7,6 +7,7 @@ namespace App\Tests\Controller;
 use App\DataFixtures\UsersFixtures;
 use App\Entity\User;
 use App\Tests\Repository\UserRepositoryTest;
+use App\Tests\Services\Manager;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -14,6 +15,7 @@ class UserControllerTest extends WebTestCase
 {
     use FixturesTrait;
     use UserRepositoryTest;
+    use Manager;
 
 
     protected $client;
@@ -27,27 +29,33 @@ class UserControllerTest extends WebTestCase
 
 
 /////////////// Path User Tests /////////////////////////
-    /**
-     * @dataProvider urlProviderUser
-     */
-    public function testTargetShowUsers($url)
+
+    public function testTargetShowUsers()
     {
-        $this->client->request('GET', $url);
+        $this->client->request('GET', "/users");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+        $deserialized = $this->deserialize($this->client);
+        $this->assertCount(10, $deserialized);
     }
 
-    public function urlProviderUser()
+    public function testTargetShowOneUser()
     {
-        yield ['/user/all'];
-        yield ['/user/2'];
+        $this->client->request('GET', "/users/2");
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+        $deserialized = $this->deserialize($this->client);
+        $this->assertTrue(2 === $deserialized['id']);
     }
+
+
 
 ////////////Delete User Tests /////////////////////
     public function testDeleteLastUser()
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/user/".$user->getId();
+        $url = "/users/".$user->getId();
         $this->client->request('DELETE', $url);
         $newLastUser = $this->findLastUser($this->client);
         $this->assertEquals(204,  $this->client->getResponse()->getStatusCode());
@@ -57,26 +65,31 @@ class UserControllerTest extends WebTestCase
 ////////////Create User Tests ////////////////////////
     public function testNewUserOk()
     {
-        $this->client->request(
-            'POST',
-            '/user/new',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            '{
+        $content = '{
                 "lastname": "John",
                 "firstname": "Doe",
                 "email": "J.Doe@gmail.com"
-                }'
+                }';
+
+        $this->client->request(
+            'POST',
+            '/users/create',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $content
         );
         $this->assertEquals(201,  $this->client->getResponse()->getStatusCode());
+        $deserialized = $this->deserialize($this->client);
+        $this->assertTrue(11 === $deserialized['id']);
+        $this->assertJson($this->client->getResponse()->getContent());
     }
 
     public function testNewUserNOK()
     {
         $this->client->request(
             'POST',
-            '/user/new',
+            '/users/create',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -94,9 +107,31 @@ class UserControllerTest extends WebTestCase
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/user/".$user->getId();
+        $url = "/users/".$user->getId();
         $this->client->request(
-            'PATCH',
+            'PUT',
+            $url,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '{
+                "lastname": "Bruno",
+                "firstname": "Doe",
+                "email": "Bruno.Doe@gmail.com"
+                }'
+        );
+        $this->assertEquals(200,  $this->client->getResponse()->getStatusCode());
+        $this->assertContains("Bruno.Doe@gmail.com", $this->client->getResponse()->getContent());
+        $this->assertJson($this->client->getResponse()->getContent());
+    }
+
+    public function testUpdateUserNOK()
+    {
+        $user =$this->findLastUser($this->client);
+        /** @var User $user */
+        $url = "/users/".$user->getId();
+        $this->client->request(
+            'PUT',
             $url,
             [],
             [],
@@ -107,19 +142,18 @@ class UserControllerTest extends WebTestCase
                 "email": "J.Doe@gmail.com"
                 }'
         );
-        $this->assertEquals(200,  $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(400,  $this->client->getResponse()->getStatusCode());
     }
 
 
 
-////////TODO : faire le listener pour récupérer la 404
     public function testUpdateUserPathNOK()
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/user/500";
+        $url = "/users/500";
         $this->client->request(
-            'PATCH',
+            'PUT',
             $url,
             [],
             [],

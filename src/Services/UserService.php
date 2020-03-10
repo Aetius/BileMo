@@ -5,7 +5,7 @@ namespace App\Services;
 
 
 use App\Entity\User;
-use App\Form\User\DTO\UserDTO;
+use App\DTO\User\UserDTO;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UserService

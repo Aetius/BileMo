@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Form\User\DTO;
+namespace App\DTO\User;
 
 
 use JMS\Serializer\Annotation as Serializer;

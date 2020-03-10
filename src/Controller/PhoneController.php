@@ -6,32 +6,36 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
+use App\Services\ResponseJson;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PhoneController extends AbstractController
 {
+    /**
+     * @var ResponseJson
+     */
+    private $responseJson;
+
+    public function __construct(ResponseJson $responseJson)
+    {
+        $this->responseJson = $responseJson;
+    }
 
     /**
      *@Route("/phones/{id}", name="phone_show_one", methods={"GET"})
      */
-    public function showOne(Phone $phone, SerializerInterface $serializer)
+    public function showOne(Phone $phone)
     {
-        $datas = $serializer->serialize($phone, 'json', SerializationContext::create()->setGroups('detail'));
-        return new JsonResponse($datas, Response::HTTP_OK, [], true);
+        return $this->responseJson->show($phone, ResponseJson::ONE);
     }
 
     /**
      *@Route("/phones", name="phone_show", methods={"GET"})
      */
-    public function showAll(PhoneRepository $repository, SerializerInterface $serializer)
+    public function showAll(PhoneRepository $repository)
     {
         $phone = $repository->findAll();
-        $datas = $serializer->serialize($phone, 'json', SerializationContext::create()->setGroups('list'));
-        return new JsonResponse($datas, Response::HTTP_OK, [], true);
+        return $this->responseJson->show($phone, ResponseJson::ALL);
     }
 }

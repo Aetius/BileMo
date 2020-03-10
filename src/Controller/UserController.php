@@ -5,39 +5,44 @@ namespace App\Controller;
 
 
 use App\Entity\User;
-use App\Form\User\CreateUserType;
-use App\Form\User\UpdateUserType;
+use App\DTO\User\UserDTO;
 use App\Repository\UserRepository;
 use App\Services\ErrorsService;
+use App\Services\ResponseJson;
 use App\Services\UserService;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
 
     /**
-     *@Route("/users/{id}", name="user_show_one", methods={"GET"})
+     * @var ResponseJson
      */
-    public function showOne(User $user, SerializerInterface $serializer)
+    private $responseJson;
+
+    public function __construct(ResponseJson $responseJson)
     {
-        $datas = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups('detail'));
-        return new JsonResponse($datas, Response::HTTP_OK, [], true);
+        $this->responseJson = $responseJson;
     }
 
     /**
-     *@Route("/user/{id}", name="user_delete_one", methods={"DELETE"})
+     *@Route("/users/{id}", name="user_show_one", methods={"GET"})
+     */
+    public function showOne(User $user)
+    {
+        return $this->responseJson->show($user, ResponseJson::ONE);
+    }
+
+    /**
+     *@Route("/users/{id}", name="user_delete_one", methods={"DELETE"})
      */
     public function delete(User $user, UserService $service)
     {
         $service->delete($user);
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return $this->responseJson->delete();
     }
 
     /**
@@ -46,22 +51,16 @@ class UserController extends AbstractController
     public function update(User $user, SerializerInterface $serializer, Request $request, UserService $service,
                            ErrorsService $errorsService)
     {
-        $form = $this->createForm(UpdateUserType::class);
-        $post = $serializer->deserialize($request->getContent(), "array", 'json');
-        $form->submit($post);
+        $dto = $serializer->deserialize($request->getContent(), UserDTO::class, 'json');
+        $errors = $errorsService->validate($dto, "Create");
 
-        if ($form->isSubmitted() && $form->isValid()){
-            //$form->getErrors(true, true);
-
-            $user = $service->update($form->getData(), $user);
+        if ($errors == null){
+            $user = $service->update($dto, $user);
             $service->save($user);
-            $datas = $serializer->serialize($user, 'json');
-            return new JsonResponse($datas, Response::HTTP_OK, [], true);
+            return $this->responseJson->updated($user);
         }
+        return $this->responseJson->failed($errors);
 
-        $errors = $errorsService->define($form->getData());
-        $datas = $serializer->serialize($errors, 'json');
-        return new JsonResponse($datas, Response::HTTP_BAD_REQUEST, [], true);
     }
 
     /**
@@ -69,32 +68,24 @@ class UserController extends AbstractController
      */
     public function create(Request $request, SerializerInterface $serializer, UserService $service, ErrorsService $errorsService)
     {
-        $form = $this->createForm(CreateUserType::class);
-        $post = $serializer->deserialize($request->getContent(), "array", 'json');
-        $form->submit($post);
+        $dto = $serializer->deserialize($request->getContent(), UserDTO::class, 'json');
+        $errors = $errorsService->validate($dto, "Create");
 
-        if ($form->isSubmitted() && $form->isValid()){
-            $user = $service->create($form->getData());
+        if ($errors == null){
+            $user = $service->create($dto);
             $service->save($user);
-            $datas = $serializer->serialize($user, 'json');
-            return new JsonResponse($datas, Response::HTTP_CREATED, [], true);
+            return $this->responseJson->created($user);
         }
-
-        $errors = $errorsService->define($form->getData());
-        $datas = $serializer->serialize($errors, 'json');
-        return new JsonResponse($datas, Response::HTTP_BAD_REQUEST, [], true);
+        return $this->responseJson->failed($errors);
     }
-
 
     /**
      *@Route("/users", name="user_show_all", methods={"GET"})
      */
-    public function showAll(SerializerInterface $serializer, UserRepository $repository)
+    public function showAll(UserRepository $repository)
     {
         $users = $repository->findAll();
-        $datas = $serializer->serialize($users, 'json', SerializationContext::create()->setGroups('list'));
-        return new JsonResponse($datas, Response::HTTP_OK, [], true);
+        return $this->responseJson->show($users, ResponseJson::ALL);
     }
-
 
 }

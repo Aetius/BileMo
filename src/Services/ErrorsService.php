@@ -23,12 +23,12 @@ class ErrorsService
      * @param mixed $formDatas
      * @return array
      */
-    public function define($formDatas)
+    public function validate($dto, $group=null)
     {
         $errors = [];
-        $allErrors = $this->validator->validate($formDatas);
+        $allErrors = $this->validator->validate($dto, null, $group);
         foreach ($allErrors as $error){
-            $errors [$error->getPropertyPath()]= $error->getMessage();
+            $errors[]= [$error->getPropertyPath() => $error->getMessage()];
         }
         return $errors;
 
