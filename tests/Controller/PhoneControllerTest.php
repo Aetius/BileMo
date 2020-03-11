@@ -6,12 +6,15 @@ namespace App\Tests\Controller;
 
 use App\DataFixtures\BrandsFixtures;
 use App\DataFixtures\PhonesFixtures;
+use App\Tests\Services\Manager;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PhoneControllerTest extends WebTestCase
 {
     use FixturesTrait;
+    use Manager;
+
     protected $client;
 
 
@@ -21,19 +24,23 @@ class PhoneControllerTest extends WebTestCase
         $this->loadFixtures([BrandsFixtures::class, PhonesFixtures::class]);
     }
 
-    /**
-     * @dataProvider urlProviderPhone
-     */
-    public function testTargetPhonePage($url)
+    public function testTargetShowPhones()
     {
-        $this->client->request('GET', $url);
+        $this->client->request('GET', '/phones');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+        $deserialized = $this->deserialize($this->client);
+        $this->assertCount(10, $deserialized);
     }
 
-    public function urlProviderPhone()
+    public function testTargetShowOnePhone()
     {
-        yield ['/show'];
-        yield ['/show/2'];
+        $this->client->request('GET', '/phones/2');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+        $deserialized = $this->deserialize($this->client);
+        $this->assertTrue(2 === $deserialized['id']);
     }
+
 
 }

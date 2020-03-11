@@ -28,11 +28,11 @@ class Brand
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Phone", mappedBy="brand", orphanRemoval=true)
      */
-    private $phone;
+    private $phones;
 
     public function __construct()
     {
-        $this->phone = new ArrayCollection();
+        $this->phones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -55,15 +55,15 @@ class Brand
     /**
      * @return Collection|Phone[]
      */
-    public function getPhone(): Collection
+    public function getPhones(): Collection
     {
-        return $this->phone;
+        return $this->phones;
     }
 
     public function addPhone(Phone $phone): self
     {
-        if (!$this->phone->contains($phone)) {
-            $this->phone[] = $phone;
+        if (!$this->phones->contains($phone)) {
+            $this->phones[] = $phone;
             $phone->setBrand($this);
         }
 
@@ -72,8 +72,8 @@ class Brand
 
     public function removePhone(Phone $phone): self
     {
-        if ($this->phone->contains($phone)) {
-            $this->phone->removeElement($phone);
+        if ($this->phones->contains($phone)) {
+            $this->phones->removeElement($phone);
             // set the owning side to null (unless already changed)
             if ($phone->getBrand() === $this) {
                 $phone->setBrand(null);
