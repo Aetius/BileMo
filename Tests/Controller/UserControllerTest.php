@@ -166,6 +166,20 @@ class UserControllerTest extends WebTestCase
         );
         $this->assertEquals(404,  $this->client->getResponse()->getStatusCode());
     }
-
+    public function testUpdateUserPathNOK2()
+    {
+        $user =$this->findLastUser($this->client);
+        /** @var User $user */
+        $url = "/users/2";
+        $this->client->request(
+            'PUT',
+            $url,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json']
+        );
+        $this->assertEquals(500,  $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+    }
 
 }

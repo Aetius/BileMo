@@ -31,7 +31,7 @@ class ExceptionListener
             $statutCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
         $message = [
-            "There was an error during the request. Here are the message error : "=>  $exception->getMessage(),
+            "There was an error during the request. Here is the message error : "=>  $exception->getMessage(),
             "Error code"=> $statutCode
         ];
         $data = $this->serializer->serialize($message, 'json');

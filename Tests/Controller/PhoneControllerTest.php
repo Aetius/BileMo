@@ -26,6 +26,7 @@ class PhoneControllerTest extends WebTestCase
 
     public function testTargetShowPhones()
     {
+
         $this->client->request('GET', '/phones');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());

@@ -28,3 +28,6 @@ services:
     App\Exceptions\Listener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    App\fixtures\Faker\Provider\CustomerProvider: ~
+    App\DataFixtures\Faker\Processor\CustomerProcessor: ~

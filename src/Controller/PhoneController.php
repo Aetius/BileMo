@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use App\Services\ResponseJson;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,6 +25,7 @@ class PhoneController extends AbstractController
 
     /**
      *@Route("/phones/{id}", name="phone_show_one", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function showOne(Phone $phone)
     {

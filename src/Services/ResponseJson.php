@@ -70,4 +70,11 @@ class ResponseJson
         $data = $this->serializer->serialize($errors, 'json');
         return new JsonResponse($data, Response::HTTP_BAD_REQUEST, [], true);
     }
+
+    //todo : ajouter le header d'autorisation.
+    /*
+    $token = jwt_authentication.encoder -> encode(['name' => $name);
+    $headers['Authorization']='Bearer '.$token
+
+     * */
 }
