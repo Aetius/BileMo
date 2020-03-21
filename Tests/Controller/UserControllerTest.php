@@ -32,7 +32,7 @@ class UserControllerTest extends WebTestCase
 
     public function testTargetShowUsers()
     {
-        $this->client->request('GET', "/users");
+        $this->client->request('GET', "/api/users");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
@@ -41,7 +41,7 @@ class UserControllerTest extends WebTestCase
 
     public function testTargetShowOneUser()
     {
-        $this->client->request('GET', "/users/2");
+        $this->client->request('GET', "/api/users/2");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
@@ -55,7 +55,7 @@ class UserControllerTest extends WebTestCase
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/users/".$user->getId();
+        $url = "/api/users/".$user->getId();
         $this->client->request('DELETE', $url);
         $newLastUser = $this->findLastUser($this->client);
         $this->assertEquals(204,  $this->client->getResponse()->getStatusCode());
@@ -73,7 +73,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/users/create',
+            '/api/users/create',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -89,7 +89,7 @@ class UserControllerTest extends WebTestCase
     {
         $this->client->request(
             'POST',
-            '/users/create',
+            '/api/users/create',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -107,7 +107,7 @@ class UserControllerTest extends WebTestCase
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/users/".$user->getId();
+        $url = "/api/users/".$user->getId();
         $this->client->request(
             'PUT',
             $url,
@@ -129,7 +129,7 @@ class UserControllerTest extends WebTestCase
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/users/".$user->getId();
+        $url = "/api/users/".$user->getId();
         $this->client->request(
             'PUT',
             $url,
@@ -151,7 +151,7 @@ class UserControllerTest extends WebTestCase
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/users/500";
+        $url = "/api/users/500";
         $this->client->request(
             'PUT',
             $url,
@@ -166,11 +166,11 @@ class UserControllerTest extends WebTestCase
         );
         $this->assertEquals(404,  $this->client->getResponse()->getStatusCode());
     }
-    public function testUpdateUserPathNOK2()
+    public function testUpdateUserContentNOK()
     {
         $user =$this->findLastUser($this->client);
         /** @var User $user */
-        $url = "/users/2";
+        $url = "/api/users/2";
         $this->client->request(
             'PUT',
             $url,

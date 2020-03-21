@@ -19,6 +19,11 @@ class CustomerRepository extends ServiceEntityRepository
         parent::__construct($registry, Customer::class);
     }
 
+    public function findLast()
+    {
+        return $this->findOneBy([], ['id'=> 'DESC']);
+    }
+
     // /**
     //  * @return Customer[] Returns an array of Customer objects
     //  */

@@ -24,13 +24,17 @@ class CustomerControllerTest extends WebTestCase
         $this->loadFixtures([UsersFixtures::class]);
     }
 
+
+
     public function testTest()
     {
         $user = $this->findLastUser($this->client);
-       $this->client->request('POST', '/test', [
+       $this->client->request('POST', '/api/test', [
             'auth'=> [$user->getLastname()]
         ]);
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
+
+
 
 }

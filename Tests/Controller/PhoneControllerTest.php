@@ -27,7 +27,7 @@ class PhoneControllerTest extends WebTestCase
     public function testTargetShowPhones()
     {
 
-        $this->client->request('GET', '/phones');
+        $this->client->request('GET', '/api/phones');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
@@ -36,7 +36,7 @@ class PhoneControllerTest extends WebTestCase
 
     public function testTargetShowOnePhone()
     {
-        $this->client->request('GET', '/phones/2');
+        $this->client->request('GET', '/api/phones/2');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
