@@ -7,24 +7,30 @@ namespace App\Tests\Controller;
 use App\DataFixtures\UsersFixtures;
 use App\Entity\User;
 use App\Tests\Repository\UserRepositoryTest;
+use App\Tests\Security\Connexion;
 use App\Tests\Services\Manager;
+use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserControllerTest extends WebTestCase
 {
-    use FixturesTrait;
+    //use FixturesTrait;
     use UserRepositoryTest;
     use Manager;
+   // use RecreateDatabaseTrait;
 
-
+//todo : voir pour suppression de liip/testFixturesbundle => pas besoin pour charger les fixtures si utilisation hautelook.
     protected $client;
 
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->loadFixtures([UsersFixtures::class]);
+        $login = new Connexion();
+        $token = $login->login($this->client);
+        $this->client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token['token']));
+        //$this->loadFixtures([UsersFixtures::class]);
     }
 
 
@@ -47,8 +53,6 @@ class UserControllerTest extends WebTestCase
         $deserialized = $this->deserialize($this->client);
         $this->assertTrue(2 === $deserialized['id']);
     }
-
-
 
 ////////////Delete User Tests /////////////////////
     public function testDeleteLastUser()

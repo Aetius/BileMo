@@ -27,13 +27,14 @@ Trait Manager
         return $serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
     }
 
-    public function serializeAPIKey(KernelBrowser $client)
+    public function loadHautelookFixtures(KernelBrowser $client, Array $data)
     {
         $kernel = $client->getKernel();
         /** @var SerializerInterface $serializer*/
-        $encoder = $kernel->getContainer()
-            ->get('lexik_jwt_authentication.encoder');
-        $api = $encoder->encode(['name'=>'demo']);
-        return $api;
+        $loader = $kernel->getContainer()
+            ->get('fidry_alice_data_fixtures.loader.doctrine');
+        $objects = $loader->load($data);
+
     }
+
 }

@@ -1,0 +1,5 @@
+App\Entity\Phone:
+    phone{1..10}:
+        name: 'S.<current()>'
+        description: '<sentence()>'
+        brand: '@brand*'

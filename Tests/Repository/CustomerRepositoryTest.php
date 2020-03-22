@@ -25,4 +25,19 @@ trait CustomerRepositoryTest
         return $user;
     }
 
+    public function findAll(KernelBrowser $client)
+    {
+        $kernel = $client->getKernel();
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+
+        $user = $entityManager
+            ->getRepository(Customer::class)
+            ->findAll();
+        return $user;
+    }
+
 }

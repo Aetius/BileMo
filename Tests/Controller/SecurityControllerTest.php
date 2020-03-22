@@ -19,25 +19,23 @@ class SecurityControllerTest  extends WebTestCase
 {
     use Manager;
     use CustomerRepositoryTest;
-    use FixturesTrait;
-    use ReloadDatabaseTrait;
+   // use FixturesTrait;
+    //use RecreateDatabaseTrait;
 
     protected $client;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-
+        //$this->loadHautelookFixtures($this->client, ["fixtures\CustomerFixturesData.yaml"]);
         //$this->loadFixtures([UsersFixtures::class]);
     }
 
-
     public function testLogin()
     {
-
-        $customer = $this->findLastCustomer($this->client)->getName();
-
-        /**@var Customer $customer*/
+        //dd($this->findAll($this->client));
+        //$this->loadFixtures(["App/fixtures/CustomerFixturesData"]);
+        $customer = $this->findLastCustomer($this->client);
         $this->client->request(
             'POST',
             '/api/login',
@@ -45,17 +43,33 @@ class SecurityControllerTest  extends WebTestCase
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'username'=>"Stark Industries.10",
+                'username'=>$customer->getName(),
                 'password'=>'toto'
             ])
         );
-        dd($this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $deserialized = $this->deserialize($this->client);
-        $this->assertTrue(11 === $deserialized['id']);
+        $this->assertTrue(array_key_exists("token", $deserialized));
         $this->assertJson($this->client->getResponse()->getContent());
-
     }
+    public function testLoginNOK()
+    {
+        $this->client->request(
+            'POST',
+            '/api/login',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'username'=>"false",
+                'password'=>'toto'
+            ])
+        );
+        $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+    }
+
+
 
 
 

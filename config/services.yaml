@@ -31,3 +31,8 @@ services:
 
     App\fixtures\Faker\Provider\CustomerProvider: ~
     App\DataFixtures\Faker\Processor\CustomerProcessor: ~
+
+    App\DataFixtures\Loader\CustomOrderFilesLoader:
+        decorates: 'fidry_alice_data_fixtures.loader.simple'
+        arguments:
+            - '@App\DataFixtures\Loader\CustomOrderFilesLoader.inner'

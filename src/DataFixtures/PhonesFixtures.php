@@ -4,10 +4,11 @@ namespace App\DataFixtures;
 
 use App\Entity\Brand;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Nelmio\Alice\Loader\NativeLoader;
 
-class PhonesFixtures extends Fixture
+class PhonesFixtures extends Fixture implements DependentFixtureInterface
 {
 
     /**
