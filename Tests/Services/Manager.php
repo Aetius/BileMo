@@ -4,13 +4,11 @@
 namespace App\Tests\Services;
 
 
-use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait Manager
 {
-
 
     /**
      * @param KernelBrowser $client
@@ -25,4 +23,5 @@ Trait Manager
 
         return $serializer->deserialize($client->getResponse()->getContent(), 'array', 'json');
     }
+
 }

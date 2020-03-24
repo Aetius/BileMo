@@ -4,6 +4,7 @@
 namespace App\Services;
 
 
+use App\Entity\Customer;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,5 +70,17 @@ class ResponseJson
     {
         $data = $this->serializer->serialize($errors, 'json');
         return new JsonResponse($data, Response::HTTP_BAD_REQUEST, [], true);
+    }
+
+    //todo : ajouter le header d'autorisation.
+    /*
+    $token = jwt_authentication.encoder -> encode(['name' => $name);
+    $headers['Authorization']='Bearer '.$token
+
+     * */
+    public function connexion(Customer $lastUsername)
+    {
+        $data = $this->serializer->serialize($lastUsername, 'json');
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 }

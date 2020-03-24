@@ -1,0 +1,2 @@
+- config de la clé de cryptage (avec le mot ou phrase secret)
+- envoi de la clé API et du nom d'utilisateur pour utilisation
