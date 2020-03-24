@@ -4,33 +4,30 @@
 namespace App\Tests\Controller;
 
 
-use App\DataFixtures\UsersFixtures;
-use App\Entity\User;
+use App\Controller\UserController;
+use App\Tests\Repository\CustomerRepositoryTest;
 use App\Tests\Repository\UserRepositoryTest;
 use App\Tests\Security\Connexion;
 use App\Tests\Services\Manager;
-use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserControllerTest extends WebTestCase
 {
-    //use FixturesTrait;
     use UserRepositoryTest;
+    use CustomerRepositoryTest;
     use Manager;
-   // use RecreateDatabaseTrait;
+    use Connexion;
 
-//todo : voir pour suppression de liip/testFixturesbundle => pas besoin pour charger les fixtures si utilisation hautelook.
+    /**
+     *@var  KernelBrowser
+     */
     protected $client;
 
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $login = new Connexion();
-        $token = $login->login($this->client);
-        $this->client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token['token']));
-        //$this->loadFixtures([UsersFixtures::class]);
     }
 
 
@@ -38,37 +35,62 @@ class UserControllerTest extends WebTestCase
 
     public function testTargetShowUsers()
     {
+        $this->setAuthorisation($this->client);
         $this->client->request('GET', "/api/users");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
-        $this->assertCount(10, $deserialized);
+        $this->assertCount(UserController::LIMIT_USER_PER_PAGE, $deserialized);
     }
 
     public function testTargetShowOneUser()
     {
-        $this->client->request('GET', "/api/users/2");
+        $customer = $this->setAuthorisation($this->client);
+        $userId = $this->findLastUser($this->client, $customer)->getId();
+
+        $this->client->request('GET', "/api/users/$userId");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
-        $this->assertTrue(2 === $deserialized['id']);
+        $this->assertTrue($userId === $deserialized['id']);
+    }
+
+    public function testTargetShowOneUserWithoutLogin()
+    {
+        $this->client->request('GET', "/api/users/2");
+        $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
     }
 
 ////////////Delete User Tests /////////////////////
     public function testDeleteLastUser()
     {
-        $user =$this->findLastUser($this->client);
-        /** @var User $user */
+        $customer = $this->setAuthorisation($this->client);
+        $user =$this->findLastUser($this->client, $customer);
+
         $url = "/api/users/".$user->getId();
         $this->client->request('DELETE', $url);
-        $newLastUser = $this->findLastUser($this->client);
+        $newLastUser = $this->findLastUser($this->client, $customer);
         $this->assertEquals(204,  $this->client->getResponse()->getStatusCode());
         $this->assertTrue($user !== $newLastUser);
     }
 
+    public function testDeleteLastUserWithoutLogin()
+    {
+        $customer = $this->findLastCustomer($this->client);
+        $user =$this->findLastUser($this->client, $customer);
+
+        $url = "/api/users/".$user->getId();
+        $this->client->request('DELETE', $url);
+        $this->assertEquals(401,  $this->client->getResponse()->getStatusCode());
+    }
+
+
+
 ////////////Create User Tests ////////////////////////
     public function testNewUserOk()
     {
+        $this->setAuthorisation($this->client);
         $content = '{
                 "lastname": "John",
                 "firstname": "Doe",
@@ -91,6 +113,7 @@ class UserControllerTest extends WebTestCase
 
     public function testNewUserNOK()
     {
+        $customer = $this->setAuthorisation($this->client);
         $this->client->request(
             'POST',
             '/api/users/create',
@@ -106,11 +129,32 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(400,  $this->client->getResponse()->getStatusCode());
     }
 
+    public function testNewUserWithoutLogin()
+    {
+        $content = '{
+                "lastname": "John",
+                "firstname": "Doe",
+                "email": "J.Doe@gmail.com"
+                }';
+
+        $this->client->request(
+            'POST',
+            '/api/users/create',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $content
+        );
+        $this->assertEquals(401,  $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+    }
+
 //////////// Update User Tests ////////////////
     public function testUpdateUserOk()
     {
-        $user =$this->findLastUser($this->client);
-        /** @var User $user */
+        $customer = $this->setAuthorisation($this->client);
+        $user =$this->findLastUser($this->client, $customer);
+
         $url = "/api/users/".$user->getId();
         $this->client->request(
             'PUT',
@@ -131,8 +175,9 @@ class UserControllerTest extends WebTestCase
 
     public function testUpdateUserNOK()
     {
-        $user =$this->findLastUser($this->client);
-        /** @var User $user */
+        $customer = $this->setAuthorisation($this->client);
+        $user =$this->findLastUser($this->client, $customer);
+
         $url = "/api/users/".$user->getId();
         $this->client->request(
             'PUT',
@@ -149,12 +194,10 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(400,  $this->client->getResponse()->getStatusCode());
     }
 
-
-
     public function testUpdateUserPathNOK()
     {
-        $user =$this->findLastUser($this->client);
-        /** @var User $user */
+        $this->setAuthorisation($this->client);
+
         $url = "/api/users/500";
         $this->client->request(
             'PUT',
@@ -163,7 +206,7 @@ class UserControllerTest extends WebTestCase
             [],
             ['CONTENT_TYPE' => 'application/json'],
             '{
-                "lastname": "",
+                "lastname": "John",
                 "firstname": "Doe",
                 "email": "J.Doe@gmail.com"
                 }'
@@ -172,9 +215,10 @@ class UserControllerTest extends WebTestCase
     }
     public function testUpdateUserContentNOK()
     {
-        $user =$this->findLastUser($this->client);
-        /** @var User $user */
-        $url = "/api/users/2";
+        $customer = $this->setAuthorisation($this->client);
+        $userId =$this->findLastUser($this->client, $customer)->getId();
+
+        $url = "/api/users/$userId";
         $this->client->request(
             'PUT',
             $url,
@@ -183,6 +227,29 @@ class UserControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json']
         );
         $this->assertEquals(500,  $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+    }
+
+
+    public function testUpdateUserWithoutLogin()
+    {
+        $customer = $this->findLastCustomer($this->client);
+        $user =$this->findLastUser($this->client, $customer);
+
+        $url = "/api/users/".$user->getId();
+        $this->client->request(
+            'PUT',
+            $url,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '{
+                "lastname": "Bruno",
+                "firstname": "Doe",
+                "email": "Bruno.Doe@gmail.com"
+                }'
+        );
+        $this->assertEquals(401,  $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
     }
 

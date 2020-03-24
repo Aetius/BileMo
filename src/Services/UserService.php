@@ -4,9 +4,11 @@
 namespace App\Services;
 
 
+use App\Entity\Customer;
 use App\Entity\User;
 use App\DTO\User\UserDTO;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserService
 {
@@ -21,13 +23,14 @@ class UserService
         $this->entityManager = $entityManager;
     }
 
-    public function create(UserDTO $userDTO)
+    public function create(UserDTO $userDTO, Customer $customer)
     {
         $user = new User();
         $user
             ->setFirstname($userDTO->firstname)
             ->setLastname($userDTO->lastname)
-            ->setEmail($userDTO->email);
+            ->setEmail($userDTO->email)
+            ->setCustomer($customer);
         return $user;
     }
 
@@ -57,4 +60,5 @@ class UserService
         return $user;
 
     }
+
 }

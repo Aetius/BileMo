@@ -1,6 +1,0 @@
-App\Entity\Customer:
-    customer_{1..10}:
-        name: <compagny()>.<current()>
-        email: '<email()>'
-        password: toto
-

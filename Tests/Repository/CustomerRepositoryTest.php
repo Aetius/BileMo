@@ -10,6 +10,10 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 trait CustomerRepositoryTest
 {
+    /**
+     * @param KernelBrowser $client
+     * @return Customer|null
+     */
     public function findLastCustomer(KernelBrowser $client)
     {
         $kernel = $client->getKernel();
@@ -19,12 +23,16 @@ trait CustomerRepositoryTest
             ->getManager();
 
 
-        $user = $entityManager
+        $customer = $entityManager
             ->getRepository(Customer::class)
             ->findLast();
-        return $user;
+        return $customer;
     }
 
+    /**
+     * @param KernelBrowser $client
+     * @return Customer[]|object[]
+     */
     public function findAll(KernelBrowser $client)
     {
         $kernel = $client->getKernel();
@@ -34,10 +42,10 @@ trait CustomerRepositoryTest
             ->getManager();
 
 
-        $user = $entityManager
+        $customer = $entityManager
             ->getRepository(Customer::class)
             ->findAll();
-        return $user;
+        return $customer;
     }
 
 }

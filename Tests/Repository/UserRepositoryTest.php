@@ -4,6 +4,7 @@
 namespace App\Tests\Repository;
 
 
+use App\Entity\Customer;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -11,7 +12,12 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 trait UserRepositoryTest
 {
 
-    public function findLastUser(KernelBrowser $client)
+    /**
+     * @param KernelBrowser $client
+     * @param Customer $customer
+     * @return User|null
+     */
+    public function findLastUser(KernelBrowser $client, Customer $customer)
     {
         $kernel = $client->getKernel();
         /** @var EntityManagerInterface $entityManager */
@@ -22,7 +28,7 @@ trait UserRepositoryTest
 
         $user = $entityManager
             ->getRepository(User::class)
-            ->findLast();
+            ->findLast($customer->getId());
         return $user;
     }
 

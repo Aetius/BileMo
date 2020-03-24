@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -20,8 +21,21 @@ class UserRepository extends ServiceEntityRepository
     }
 
 
-    public function findLast()
+    public function findLast($customerId)
     {
-        return $this->findOneBy([], ['id'=> 'DESC']);
+        return $this->findOneBy(["customer"=>$customerId], ['id'=> 'DESC']);
+    }
+
+    public function findAllByCustomer(int $customerId)
+    {
+        return $this->findBy(["customer"=>$customerId]);
+    }
+
+    public function findAllQuery($custumerId)
+    {
+        return $this->createQueryBuilder('p')
+            ->where("p.customer = $custumerId ")
+            ->orderBy('p.id', 'DESC')
+            ->getQuery();
     }
 }

@@ -1,5 +1,0 @@
-App\Entity\User:
-    user{1..10}:
-        lastname: <lastName()>
-        firstname: <firstName()>
-        email: <email()>
