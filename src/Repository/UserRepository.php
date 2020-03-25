@@ -28,7 +28,7 @@ class UserRepository extends ServiceEntityRepository
 
     public function findAllByCustomer(int $customerId)
     {
-        return $this->findBy(["customer"=>$customerId]);
+        return $this->findBy(["customer"=>$customerId], ['id'=> 'DESC']);
     }
 
     public function findAllQuery($custumerId)

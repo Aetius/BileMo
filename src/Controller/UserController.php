@@ -9,6 +9,7 @@ use App\Entity\Customer;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Representation\DataRepresentation;
+use App\Representation\ErrorRepresentation;
 use App\Services\ErrorsService;
 use App\Services\ResponseJson;
 use App\Services\UserService;
@@ -46,7 +47,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/users/{id}", name="user_delete_one", methods={"DELETE"})
+     * @Route("/users/{id}", name="user_delete", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
      */
@@ -57,7 +58,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/users/{id}", name="user_update_one", methods={"PUT"})
+     * @Route("/users/{id}", name="user_update", methods={"PUT"})
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
      */
@@ -70,9 +71,9 @@ class UserController extends AbstractController
         if ($errors == null) {
             $user = $service->update($dto, $user);
             $service->save($user);
-            return $this->responseJson->updated($user);
+            return $this->responseJson->show($user, ResponseJson::ONE);
         }
-        return $this->responseJson->failed($errors);
+        return $this->responseJson->failed($errors, ResponseJson::ONE);
 
     }
 
@@ -80,7 +81,8 @@ class UserController extends AbstractController
      * @Route("/users/create", name="user_create", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function create(Request $request, SerializerInterface $serializer, UserService $service, ErrorsService $errorsService)
+    public function create(Request $request, SerializerInterface $serializer, UserService $service, ErrorsService $errorsService,
+        DataRepresentation $representation)
     {
         $dto = $serializer->deserialize($request->getContent(), UserDTO::class, 'json');
         $errors = $errorsService->validate($dto, "Create");
@@ -90,9 +92,9 @@ class UserController extends AbstractController
             /**@var Customer $customer */
             $user = $service->create($dto, $customer);
             $service->save($user); //todo : lors de la création, renvoie beaucoup trop d'info (customer complet + autres users associés).
-            return $this->responseJson->created($user);
+            return $this->responseJson->created($user, ResponseJson::ONE);
         }
-        return $this->responseJson->failed($errors);
+        return $this->responseJson->failed($errors, ResponseJson::ONE);
     }
 
     /**
@@ -106,9 +108,10 @@ class UserController extends AbstractController
             $request->query->getInt('page', 1),
             $request->query->getInt('limit', self::LIMIT_USER_PER_PAGE)
         );
-        $users = $representation->create($usersQuery);
-
+        $users = $representation->showAll($usersQuery, $request->get("_route"));
         return $this->responseJson->show($users, ResponseJson::ALL);
     }
+
+
 
 }

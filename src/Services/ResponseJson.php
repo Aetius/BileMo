@@ -4,7 +4,6 @@
 namespace App\Services;
 
 
-use App\Entity\Customer;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,55 +31,39 @@ class ResponseJson
      */
     public function show($data, $group)
     {
-        $dataSerialized = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups($group));
+        $dataSerialized = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups([$group, "Default"]));
         return new JsonResponse($dataSerialized, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * @return Response
+     */
     public function delete()
     {
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
-     * @param mixed $data
+     * @param mixed $user
+     * @param string $group
      * @return JsonResponse
      */
-    public function updated($data)
+    public function created($data, $group)
     {
-        $data = $this->serializer->serialize($data, 'json');
-        return new JsonResponse($data, Response::HTTP_OK, [], true);
-    }
-
-    /**
-     * @param mixed $data
-     * @return JsonResponse
-     */
-    public function created($data)
-    {
-        $datas = $this->serializer->serialize($data, 'json');
-        return new JsonResponse($datas, Response::HTTP_CREATED, [], true);
+        $dataSerialized = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups([$group, "Default"]));
+        return new JsonResponse($dataSerialized, Response::HTTP_CREATED, [], true);
     }
 
 
     /**
-     * @param array $errors
+     * @param mixed $user
+     * @param string $group
      * @return JsonResponse
      */
-    public function failed(array $errors)
+    public function failed(array $errors, $group)
     {
-        $data = $this->serializer->serialize($errors, 'json');
-        return new JsonResponse($data, Response::HTTP_BAD_REQUEST, [], true);
+        $dataSerialized = $this->serializer->serialize($errors, 'json', SerializationContext::create()->setGroups([$group, "Default"]));
+        return new JsonResponse($dataSerialized, Response::HTTP_BAD_REQUEST, [], true);
     }
 
-    //todo : ajouter le header d'autorisation.
-    /*
-    $token = jwt_authentication.encoder -> encode(['name' => $name);
-    $headers['Authorization']='Bearer '.$token
-
-     * */
-    public function connexion(Customer $lastUsername)
-    {
-        $data = $this->serializer->serialize($lastUsername, 'json');
-        return new JsonResponse($data, Response::HTTP_OK, [], true);
-    }
 }

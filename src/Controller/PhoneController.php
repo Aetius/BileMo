@@ -43,17 +43,18 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/phones", name="phone_show", methods={"GET"})
+     * @Route("/phones", name="phone_show_all", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
     public function showAll(PhoneRepository $repository, PaginatorInterface $paginator, Request $request, DataRepresentation $representation)
     {
         $phonesQuery = $paginator->paginate(
-            $repository->findAllQuery(),
+            $repository->findAllQuery($request->query->get('brand')),
             $request->query->getInt('page', 1),
             $request->query->getInt('limit', self::LIMIT_PHONE_PER_PAGE)
         );
-        $phones = $representation->create($phonesQuery);
+        $phones = $representation->showAll($phonesQuery, $request->get("_route"));
         return $this->responseJson->show($phones, ResponseJson::ALL);
     }
+
 }
