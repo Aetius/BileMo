@@ -1,0 +1,7 @@
+gesdinet_jwt_refresh_token:
+    ttl: 2628000     #default value = 1 monnth (2 628 000) before login is needed
+    user_identity_field: username
+    ttl_update: false #if true, reset the token TTL eache time a refresh is asking.
+    firewall: api
+    token_parameter_name: refresh_token
+    single_use: true  #If set to true and the refresh token is consumed, a new refresh token will be provided
