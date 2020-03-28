@@ -4,9 +4,43 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PhoneRepository")
+ *
+ *
+ * @Hateoas\Relation(
+ *     "self",
+ *     href =  @Hateoas\Route(
+ *         "phone_show_one",
+ *         parameters={"id" = "expr(object.getId())"},
+ *         absolute = true
+ *     )
+ * )
+ *
+ * @Hateoas\Relation(
+*      "shwoAll",
+ *     href = @Hateoas\Route(
+ *          "phone_show_all",
+ *          absolute=true
+ *     )
+ * )
+ *
+ *  @Hateoas\Relation(
+ *      "showAllByBrand",
+ *     href = @Hateoas\Route(
+ *          "phone_show_all",
+ *          parameters={"brand" = "1" },
+ *          absolute=true
+ *     )
+ * )
+ *
+ * @Hateoas\Relation(
+ *     "brand",
+ *     embedded= @Hateoas\Embedded("expr(object.getBrand())"),
+ * )
+ *
  */
 class Phone
 {
@@ -14,18 +48,21 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
      * @Serializer\Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
      * @Serializer\Groups({"list", "detail"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
+     *
      * @Serializer\Groups({"detail"})
      */
     private $description;
@@ -33,7 +70,8 @@ class Phone
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Brand", inversedBy="phone")
      * @ORM\JoinColumn(nullable=false)
-     * @Serializer\Groups({"detail"})
+     *
+     * @Serializer\Groups({"exclude"})
      */
     private $brand;
 

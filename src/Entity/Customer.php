@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CustomerRepository")
@@ -16,26 +17,36 @@ class Customer implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
+     * @Serializer\Groups({"detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     *
+     * @Serializer\Groups({"detail"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     *
+     * @Serializer\Groups({"detail"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Serializer\Groups({"exclude"})
      */
     private $password;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="customer", orphanRemoval=true)
+     *
+     * @Serializer\Groups({"exclude"})
      */
     private $users;
 

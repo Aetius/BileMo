@@ -19,14 +19,16 @@ class PhoneRepository extends ServiceEntityRepository
         parent::__construct($registry, Phone::class);
     }
 
-    /**
-     * @return \Doctrine\ORM\Query
-     */
-    public function findAllQuery()
+
+    public function findAllQuery(?int $brand)
     {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.id', 'DESC')
-            ->getQuery();
+        $query = $this->createQueryBuilder('p')
+            ->orderBy('p.id', 'DESC');
+
+        if ($brand !== null){
+            $query->where("p.brand=$brand");
+        }
+            return $query->getQuery();
     }
 
 }

@@ -28,7 +28,7 @@ class ErrorsService
         $errors = [];
         $allErrors = $this->validator->validate($dto, null, $group);
         foreach ($allErrors as $error){
-            $errors[]= [$error->getPropertyPath() => $error->getMessage()];
+            $errors[]= $error->getPropertyPath()." : ".$error->getMessage()." Error code : 400";
         }
         return $errors;
 

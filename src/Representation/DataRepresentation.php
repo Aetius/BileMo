@@ -4,6 +4,10 @@
 namespace App\Representation;
 
 
+use App\Entity\User;
+use Hateoas\Representation\CollectionRepresentation;
+use Hateoas\Representation\PaginatedRepresentation;
+use Hateoas\Representation\VndErrorRepresentation;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
 class DataRepresentation
@@ -13,7 +17,7 @@ class DataRepresentation
 
     private $meta;
 
-    public function create(PaginationInterface $data)
+/*    public function create(PaginationInterface $data)
     {
 
         $this->setMeta('limit', $data->getItemNumberPerPage());
@@ -32,6 +36,24 @@ class DataRepresentation
             throw new \LogicException(sprintf('This meta already exists. '));
         }
         $this->meta[$name]=$value;
+    }*/
+
+
+    public function showAll(PaginationInterface $data, string $route)
+    {
+        $paginatedCollection = new PaginatedRepresentation(
+            new CollectionRepresentation( $data),
+            $route,
+            [],
+            $data->getCurrentPageNumber(),
+            $data->getItemNumberPerPage(),
+            $data->getTotalItemCount(),
+            'page',
+            'limit',
+            true,
+            null
+        );
+        return $paginatedCollection;
     }
 
 }

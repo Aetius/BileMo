@@ -16,17 +16,22 @@ class Brand
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
+     * @Serializer\Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=100)
-     * @Serializer\Groups({"detail"})
+     *
+     * @Serializer\Groups({"list", "detail"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Phone", mappedBy="brand", orphanRemoval=true)
+     *
+     * @Serializer\Groups({"exclude"})
      */
     private $phones;
 
