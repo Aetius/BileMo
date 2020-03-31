@@ -99,6 +99,12 @@ class PhoneController extends AbstractController
      *            type="integer",
      *            description="Allow you to show all the phones by brand"
      *        ),
+     *      @SWG\Parameter(
+     *            name="keyword",
+     *            in="query",
+     *            type="string",
+     *            description="Allow you to show all the phones by keyword. You can mix this parameter and brand parameter."
+     *        ),
      *     @SWG\Parameter(
      *            name="page",
      *            in="query",
@@ -132,7 +138,7 @@ class PhoneController extends AbstractController
                             DataRepresentation $representation)
     {
         $phonesQuery = $paginator->paginate(
-            $repository->findAllQuery($request->query->get('keyword')),
+            $repository->findAllQuery($request->query->get('keyword'), $request->query->get('brand')),
             $request->query->getInt('page', 1),
             $request->query->getInt('limit', self::LIMIT_PHONE_PER_PAGE)
         );

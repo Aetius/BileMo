@@ -14,6 +14,7 @@ With this API, you will have access to our list of phones, and you will be able 
 ###To use this API :
 - Contact the administrator of this API. You will have your credentials to have granted access. 
 - Then go to the documentation to familiarize with the routes and options : 
-    The documentation is in https://127.0.0.1:8000/api/doc
+    The documentation is in https://127.0.0.1:8000/api/doc. 
+    If you use Postman (or another api), you will find the doc in https://127.0.0.1:8000/api/doc.json
     
 - To access all of the others parts of this API, you have to be connected. 

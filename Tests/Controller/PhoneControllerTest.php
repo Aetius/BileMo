@@ -34,7 +34,7 @@ class PhoneControllerTest extends WebTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
-        $this->assertCount(PhoneController::LIMIT_PHONE_PER_PAGE, $deserialized);
+        $this->assertCount(PhoneController::LIMIT_PHONE_PER_PAGE, $deserialized["_embedded"]["items"]);
     }
 
     public function testTargetShowOnePhone()

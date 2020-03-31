@@ -32,4 +32,19 @@ trait UserRepositoryTest
         return $user;
     }
 
+    public function findAllUser(KernelBrowser $client, Customer $customer)
+    {
+        $kernel = $client->getKernel();
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+
+        $users = $entityManager
+            ->getRepository(User::class)
+            ->findAllByCustomer($customer);
+        return $users;
+    }
+
 }

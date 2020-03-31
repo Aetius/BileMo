@@ -9,6 +9,7 @@ use App\Tests\Repository\CustomerRepositoryTest;
 use App\Tests\Repository\UserRepositoryTest;
 use App\Tests\Security\Connexion;
 use App\Tests\Services\Manager;
+use App\Tests\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -18,6 +19,7 @@ class UserControllerTest extends WebTestCase
     use CustomerRepositoryTest;
     use Manager;
     use Connexion;
+    use UserService;
 
     /**
      *@var  KernelBrowser
@@ -35,12 +37,14 @@ class UserControllerTest extends WebTestCase
 
     public function testTargetShowUsers()
     {
-        $this->setAuthorisation($this->client);
+        $customer = $this->setAuthorisation($this->client);
         $this->client->request('GET', "/api/users");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
-        $this->assertCount(UserController::LIMIT_USER_PER_PAGE, $deserialized);
+        $users = $this->findAllUser($this->client, $customer);
+        $nbUsers = $this->defineNumberOfUsersByCustomer($users);
+        $this->assertCount($nbUsers, $deserialized["_embedded"]["items"]);
     }
 
     public function testTargetShowOneUser()
@@ -99,7 +103,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/users/create',
+            '/api/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -116,7 +120,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->setAuthorisation($this->client);
         $this->client->request(
             'POST',
-            '/api/users/create',
+            '/api/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -139,7 +143,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/users/create',
+            '/api/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
