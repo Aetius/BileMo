@@ -20,13 +20,16 @@ class PhoneRepository extends ServiceEntityRepository
     }
 
 
-    public function findAllQuery(?int $brand)
+    public function findAllQuery(?string $keyword)
     {
         $query = $this->createQueryBuilder('p')
+            ->innerJoin('p.brand', 'b')
             ->orderBy('p.id', 'DESC');
 
-        if ($brand !== null){
-            $query->where("p.brand=$brand");
+        if ($keyword !== null){
+            $query->where("b.name LIKE :keyword");
+            $query->orWhere("p.name LIKE :keyword");
+            $query->setParameter('keyword', "%".$keyword."%");
         }
             return $query->getQuery();
     }

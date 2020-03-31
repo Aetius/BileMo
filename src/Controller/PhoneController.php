@@ -14,8 +14,11 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class PhoneController extends AbstractController
 {
@@ -35,12 +38,12 @@ class PhoneController extends AbstractController
         $this->responseJson = $responseJson;
         $this->representation = $representation;
     }
-    
+
     /**
-     * @Route("/phones/{id}", name="phone_show_one", methods={"GET"})
+     * @Route("/phones/{id}", methods={"GET"}, name="phone_show_one")
      * @IsGranted("ROLE_USER")
      *
-     *@SWG\Get(
+     * @SWG\Get(
      *    summary= "Show one phone.",
      *    description = "This url allows you to view one phone. You will have to define the parameter' Id",
      *    @SWG\Parameter(
@@ -64,18 +67,26 @@ class PhoneController extends AbstractController
      *    )
      *)
      * @Security(name="Bearer")
+     * @param Phone $phone
+     * @param AdapterInterface $adapter
+     * @return JsonResponse
      */
-    public function showOne(Phone $phone)
+    public function showOne(Phone $phone, AdapterInterface $adapter)
     {
-        return $this->responseJson->show($phone, ResponseJson::ONE);
+       /* $cache = $adapter->get('phone'.$phone->getId(), function(Phone $phone, ItemInterface $item){
+            dd($phone);*/
+            return $this->responseJson->show($phone, ResponseJson::ONE);
+       /* });
+        return $cache;*/
+
     }
 
 
     /**
-     * @Route("/phones", name="phone_show_all", methods={"GET"})
+     * @Route("/phones", methods={"GET"}, name="phone_show_all")
      * @IsGranted("ROLE_USER")
      *
-     *@SWG\Get(
+     * @SWG\Get(
      *    summary= "Show all the phones",
      *    description = "This url allows you to view all the phones, with a custom pagination. You will have to define the parameters",
      *    produces={
@@ -111,12 +122,17 @@ class PhoneController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
-     *
+     * @param PhoneRepository $repository
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @param DataRepresentation $representation
+     * @return JsonResponse
      */
-    public function showAll(PhoneRepository $repository, PaginatorInterface $paginator, Request $request, DataRepresentation $representation)
+    public function showAll(PhoneRepository $repository, PaginatorInterface $paginator, Request $request,
+                            DataRepresentation $representation)
     {
         $phonesQuery = $paginator->paginate(
-            $repository->findAllQuery($request->query->get('brand')),
+            $repository->findAllQuery($request->query->get('keyword')),
             $request->query->getInt('page', 1),
             $request->query->getInt('limit', self::LIMIT_PHONE_PER_PAGE)
         );

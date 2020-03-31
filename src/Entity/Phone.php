@@ -27,15 +27,6 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     )
  * )
  *
- *  @Hateoas\Relation(
- *      "showAllByBrand",
- *     href = @Hateoas\Route(
- *          "phone_show_all",
- *          parameters={"brand" = "1" },
- *          absolute=true
- *     )
- * )
- *
  * @Hateoas\Relation(
  *     "brand",
  *     embedded= @Hateoas\Embedded("expr(object.getBrand())"),

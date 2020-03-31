@@ -28,7 +28,7 @@ trait UserRepositoryTest
 
         $user = $entityManager
             ->getRepository(User::class)
-            ->findLast($customer->getId());
+            ->findLast($customer);
         return $user;
     }
 

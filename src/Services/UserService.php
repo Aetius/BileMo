@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\DTO\User\UserDTO;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserService
 {
@@ -23,14 +24,15 @@ class UserService
         $this->entityManager = $entityManager;
     }
 
-    public function create(UserDTO $userDTO, Customer $customer)
+    public function create(UserDTO $userDTO)
     {
         $user = new User();
         $user
             ->setFirstname($userDTO->firstname)
             ->setLastname($userDTO->lastname)
             ->setEmail($userDTO->email)
-            ->setCustomer($customer);
+            ->setCustomer($userDTO->customer);
+
         return $user;
     }
 
