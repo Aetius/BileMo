@@ -25,9 +25,15 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Exceptions\Listener\ExceptionListener:
+    App\Listener\Exceptions\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+    App\Listener\Request\CacheRequestListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+    App\Listener\Response\CacheResponseListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
 
     App\fixtures\Faker\Provider\CustomerProvider: ~
     App\DataFixtures\Faker\Processor\CustomerProcessor: ~

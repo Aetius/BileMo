@@ -18,3 +18,6 @@ With this API, you will have access to our list of phones, and you will be able 
     If you use Postman (or another api), you will find the doc in https://127.0.0.1:8000/api/doc.json
     
 - To access all of the others parts of this API, you have to be connected. 
+
+###About the cache system
+A cache system is installed. If you want to disable it, you just have to go in the config\services.yaml and comment "App\Listener\Request\CacheRequestListener:" and "App\Listener\Response\CacheResponseListener:". 

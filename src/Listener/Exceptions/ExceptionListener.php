@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Exceptions\Listener;
+namespace App\Listener\Exceptions;
 
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;

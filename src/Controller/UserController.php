@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Representation\DataRepresentation;
 use App\Services\ErrorsService;
+use App\Services\Paginator;
 use App\Services\ResponseJson;
 use App\Services\UserService;
 use JMS\Serializer\SerializerInterface;
@@ -179,7 +180,6 @@ class UserController extends AbstractController
             return $this->responseJson->show($user, ResponseJson::ONE);
         }
         return $this->responseJson->failed($errors, ResponseJson::ONE);
-
     }
 
     /**
@@ -280,21 +280,17 @@ class UserController extends AbstractController
      *
      * @Security(name="Bearer")
      * @param UserRepository $repository
-     * @param PaginatorInterface $paginator
+     * @param Paginator $paginator
      * @param Request $request
      * @param DataRepresentation $representation
      * @return JsonResponse
      */
-    public function showAll(UserRepository $repository, PaginatorInterface $paginator, Request $request,
+    public function showAll(UserRepository $repository, Paginator $paginator, Request $request,
                             DataRepresentation $representation)
     {
         $customer = $this->getUser();
-        $usersQuery = $paginator->paginate(
             /** @var Customer $customer */
-            $repository->findAllQuery($customer),
-            $request->query->getInt('page', 1),
-            $request->query->getInt('limit', self::LIMIT_USER_PER_PAGE)
-        );
+        $usersQuery = $paginator->paginateUsers($request->query, $repository, $customer);
         $users = $representation->showAll($usersQuery, $request->get("_route"));
         return $this->responseJson->show($users, ResponseJson::ALL);
     }

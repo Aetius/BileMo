@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use App\Representation\DataRepresentation;
+use App\Services\Paginator;
 use App\Services\ResponseJson;
 use Knp\Component\Pager\PaginatorInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -28,15 +29,10 @@ class PhoneController extends AbstractController
      * @var ResponseJson
      */
     private $responseJson;
-    /**
-     * @var DataRepresentation
-     */
-    private $representation;
 
-    public function __construct(ResponseJson $responseJson, DataRepresentation $representation)
+    public function __construct(ResponseJson $responseJson)
     {
         $this->responseJson = $responseJson;
-        $this->representation = $representation;
     }
 
     /**
@@ -71,14 +67,9 @@ class PhoneController extends AbstractController
      * @param AdapterInterface $adapter
      * @return JsonResponse
      */
-    public function showOne(Phone $phone, AdapterInterface $adapter)
+    public function showOne(Phone $phone)
     {
-       /* $cache = $adapter->get('phone'.$phone->getId(), function(Phone $phone, ItemInterface $item){
-            dd($phone);*/
-            return $this->responseJson->show($phone, ResponseJson::ONE);
-       /* });
-        return $cache;*/
-
+        return $this->responseJson->show($phone, ResponseJson::ONE);
     }
 
 
@@ -129,19 +120,15 @@ class PhoneController extends AbstractController
      *
      * @Security(name="Bearer")
      * @param PhoneRepository $repository
-     * @param PaginatorInterface $paginator
+     * @param Paginator $paginator
      * @param Request $request
      * @param DataRepresentation $representation
      * @return JsonResponse
      */
-    public function showAll(PhoneRepository $repository, PaginatorInterface $paginator, Request $request,
+    public function showAll(PhoneRepository $repository, Paginator $paginator, Request $request,
                             DataRepresentation $representation)
     {
-        $phonesQuery = $paginator->paginate(
-            $repository->findAllQuery($request->query->get('keyword'), $request->query->get('brand')),
-            $request->query->getInt('page', 1),
-            $request->query->getInt('limit', self::LIMIT_PHONE_PER_PAGE)
-        );
+        $phonesQuery = $paginator->paginatePhones($request->query, $repository);
         $phones = $representation->showAll($phonesQuery, $request->get("_route"));
         return $this->responseJson->show($phones, ResponseJson::ALL);
     }

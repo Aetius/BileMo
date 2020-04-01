@@ -25,7 +25,7 @@ class ResponseJson
     }
 
     /**
-     * @param mixed $user
+     * @param mixed $data
      * @param string $group
      * @return JsonResponse
      */
@@ -44,7 +44,7 @@ class ResponseJson
     }
 
     /**
-     * @param mixed $user
+     * @param mixed $data
      * @param string $group
      * @return JsonResponse
      */

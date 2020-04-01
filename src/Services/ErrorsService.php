@@ -20,7 +20,8 @@ class ErrorsService
     }
 
     /**
-     * @param mixed $formDatas
+     * @param $dto
+     * @param null $group
      * @return array
      */
     public function validate($dto, $group=null)
@@ -31,8 +32,5 @@ class ErrorsService
             $errors[]= $error->getPropertyPath()." : ".$error->getMessage()." Error code : 400";
         }
         return $errors;
-
     }
-
-
 }
