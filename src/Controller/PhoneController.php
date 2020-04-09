@@ -5,11 +5,9 @@ namespace App\Controller;
 
 
 use App\Entity\Phone;
-use App\Repository\PhoneRepository;
 use App\Representation\DataRepresentation;
-use App\Services\Paginator;
+use App\Representation\PhonesRepresentation;
 use App\Services\ResponseJson;
-use Knp\Component\Pager\PaginatorInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -17,9 +15,7 @@ use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class PhoneController extends AbstractController
 {
@@ -63,6 +59,8 @@ class PhoneController extends AbstractController
      *    )
      *)
      * @Security(name="Bearer")
+     *
+     *
      * @param Phone $phone
      * @param AdapterInterface $adapter
      * @return JsonResponse
@@ -119,17 +117,14 @@ class PhoneController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
-     * @param PhoneRepository $repository
-     * @param Paginator $paginator
-     * @param Request $request
+     *
+     *
      * @param DataRepresentation $representation
      * @return JsonResponse
      */
-    public function showAll(PhoneRepository $repository, Paginator $paginator, Request $request,
-                            DataRepresentation $representation)
+    public function showAll(PhonesRepresentation $representation)
     {
-        $phonesQuery = $paginator->paginatePhones($request->query, $repository);
-        $phones = $representation->showAll($phonesQuery, $request->get("_route"));
+        $phones = $representation->showAll();
         return $this->responseJson->show($phones, ResponseJson::ALL);
     }
 

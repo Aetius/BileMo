@@ -5,16 +5,12 @@ namespace App\Controller;
 
 
 use App\DTO\User\UserDTO;
-use App\Entity\Customer;
 use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Representation\DataRepresentation;
+use App\Representation\UsersRepresentation;
 use App\Services\ErrorsService;
-use App\Services\Paginator;
 use App\Services\ResponseJson;
 use App\Services\UserService;
 use JMS\Serializer\SerializerInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -224,6 +220,8 @@ class UserController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
+     *
+     *
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param UserService $service
@@ -279,19 +277,14 @@ class UserController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
-     * @param UserRepository $repository
-     * @param Paginator $paginator
-     * @param Request $request
-     * @param DataRepresentation $representation
+     *
+     *
+     * @param UsersRepresentation $representation
      * @return JsonResponse
      */
-    public function showAll(UserRepository $repository, Paginator $paginator, Request $request,
-                            DataRepresentation $representation)
+    public function showAll(UsersRepresentation $representation)
     {
-        $customer = $this->getUser();
-            /** @var Customer $customer */
-        $usersQuery = $paginator->paginateUsers($request->query, $repository, $customer);
-        $users = $representation->showAll($usersQuery, $request->get("_route"));
+        $users = $representation->showAll();
         return $this->responseJson->show($users, ResponseJson::ALL);
     }
 

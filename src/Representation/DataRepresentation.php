@@ -8,10 +8,10 @@ use Hateoas\Representation\CollectionRepresentation;
 use Hateoas\Representation\PaginatedRepresentation;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
-class DataRepresentation
+trait DataRepresentation
 {
 
-    public function showAll(PaginationInterface $data, string $route)
+    public function paginationCollection(PaginationInterface $data, string $route)
     {
         $paginatedCollection = new PaginatedRepresentation(
             new CollectionRepresentation( $data),
