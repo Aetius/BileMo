@@ -10,9 +10,6 @@ class CustomerProvider extends Base
         'Samsung',
         'Nokia',
         'Siemens',
-        'Bouygues',
-        'Renault',
-        'Wayne Enterprise',
         'Stark Industries'
     ];
 

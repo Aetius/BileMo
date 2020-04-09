@@ -33,7 +33,7 @@ class UserControllerTest extends WebTestCase
     }
 
 
-/////////////// Path User Tests /////////////////////////
+/////////////// Show User Tests /////////////////////////
 
     public function testTargetShowUsers()
     {
@@ -94,11 +94,11 @@ class UserControllerTest extends WebTestCase
 ////////////Create User Tests ////////////////////////
     public function testNewUserOk()
     {
-        $this->setAuthorisation($this->client);
+        $customer = $this->setAuthorisation($this->client);
         $content = '{
-                "lastname": "John",
-                "firstname": "Doe",
-                "email": "J.Doe@gmail.com"
+                "lastname": "Doe",
+                "firstname": "John",
+                "email": "J.Doe@test.com"
                 }';
 
         $this->client->request(
@@ -109,9 +109,10 @@ class UserControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             $content
         );
+
         $this->assertEquals(201,  $this->client->getResponse()->getStatusCode());
         $deserialized = $this->deserialize($this->client);
-        $this->assertTrue(11 === $deserialized['id']);
+        $this->assertTrue(12 === $deserialized['id']);
         $this->assertJson($this->client->getResponse()->getContent());
     }
 
@@ -131,6 +132,26 @@ class UserControllerTest extends WebTestCase
                 }'
         );
         $this->assertEquals(400,  $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testNewUserNokEmailAlreadyUsed()
+    {
+        $customer = $this->findDemoCustomer($this->client);
+        $this->setAuthorisation($this->client, $customer);
+        $this->client->request(
+            'POST',
+            '/api/users',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '{
+                "lastname": "Doe",
+                "firstname": "John",
+                "email": "John.Doe@yahoo.fr"
+                }'
+        );
+        $this->assertEquals(400,  $this->client->getResponse()->getStatusCode());
+
     }
 
     public function testNewUserWithoutLogin()

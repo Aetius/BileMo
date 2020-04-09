@@ -4,10 +4,15 @@
 namespace App\DTO\User;
 
 
-use App\Validator\UniqueEmail;
+use App\Validator\UniqueEmailFromCustomer;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class UserDTO
+ *
+ * @UniqueEmailFromCustomer()
+ */
 class UserDTO
 {
 
@@ -15,7 +20,7 @@ class UserDTO
      * @Serializer\Type("string")
      * @Assert\NotNull(groups={"Create"})
      * @Assert\NotBlank(groups={"Create"})
-     * @Assert\Length(min="2", max="20")
+     * @Assert\Length(min="1", max="155")
      */
     public $lastname;
 
@@ -23,7 +28,7 @@ class UserDTO
      * @Serializer\Type("string")
      * @Assert\NotNull(groups={"Create"})
      * @Assert\NotBlank(groups={"Create"})
-     * @Assert\Length(min="2", max="20")
+     * @Assert\Length(min="1", max="155")
      */
     public $firstname;
 
@@ -32,7 +37,6 @@ class UserDTO
      * @Assert\NotNull(groups={"Create"})
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Email()
-     * @UniqueEmail()
      */
     public $email;
 

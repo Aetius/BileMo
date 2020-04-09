@@ -11,7 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity({"email", "customer"}, errorPath="email", message="This value is already user. ")
  *
  * @Hateoas\Relation(
  *      "self",
@@ -86,8 +85,6 @@ class User
      * @ORM\Column(name="email", type="string", length=255)
      *
      * @Serializer\Groups({"list", "detail"})
-     *
-     * @Assert\Email()
      */
     private $email;
 

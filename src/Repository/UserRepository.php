@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\User\UserDTO;
 use App\Entity\Customer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -31,8 +32,9 @@ class UserRepository extends ServiceEntityRepository
         return $this->findBy(["customer"=>$customer], ['id'=> 'DESC']);
     }
 
-    public function findAllByEmail(string $email){
-        return $this->findBy(["email"=>$email]);
+    public function findAllByEmail(UserDTO $userDTO){
+
+        return $this->findBy(["email"=>$userDTO->email, "customer"=>$userDTO->customer]);
     }
 
     public function findAllQuery(Customer $customer)

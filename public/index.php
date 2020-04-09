@@ -21,6 +21,11 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false
 }
 
 $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+/* To desactivate the cache system, comment the lign below */ //todo : mettre le dev en prod pour déclencher le cache uniquement en env de prod
+if ('dev' === $kernel->getEnvironment()) {
+    $kernel = new \App\CacheKernel($kernel);
+}
+
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();

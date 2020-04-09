@@ -1,5 +1,9 @@
 App\Entity\Customer:
-    customer_{1..10}:
+    customer_1:
+        name: demo
+        email: demo@demo.fr
+        password: demo
+    customer_{2..5}:
         name: <compagny()>.<current()>
         email: '<email()>'
         password: demo

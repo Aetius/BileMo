@@ -35,7 +35,6 @@ class Customer implements UserInterface
      *
      * @Serializer\Groups({"detail"})
      *
-     * @Assert\Email()
      */
     private $email;
 

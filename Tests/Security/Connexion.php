@@ -39,15 +39,14 @@ trait Connexion
      * @param KernelBrowser $client
      * @return Customer
      */
-    public function setAuthorisation(KernelBrowser $client)
+    public function setAuthorisation(KernelBrowser $client, $customer = null)
     {
-        $this->customer = $this->findLastCustomer($client);
+        $this->customer = !is_null($customer) ? $customer : $this->findLastCustomer($client);
+
         $this->loginRequest($this->client);
         $token = $this->deserialize($client);
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token['token']));
         return $this->customer;
     }
-
-
 
 }

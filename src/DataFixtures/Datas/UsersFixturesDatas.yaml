@@ -1,5 +1,10 @@
 App\Entity\User:
-    user{1..10}:
+    user1:
+        lastname: Doe
+        firstname: John
+        email: John.Doe@yahoo.fr
+        customer: '@customer_1'
+    user{2..11}:
         lastname: <lastName()>
         firstname: <firstName()>
         email: <email()>
