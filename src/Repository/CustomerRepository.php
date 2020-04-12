@@ -24,6 +24,11 @@ class CustomerRepository extends ServiceEntityRepository
         return $this->findOneBy([], ['id'=> 'DESC']);
     }
 
+    public function findDemoCustomer()
+    {
+        return $this->findOneBy(['name'=>"demo"]);
+    }
+
     // /**
     //  * @return Customer[] Returns an array of Customer objects
     //  */

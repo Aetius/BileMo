@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Exceptions\Listener;
+namespace App\Listener\Exceptions;
 
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,18 +25,17 @@ class ExceptionListener
     {
         $exception = $event->getThrowable();
 
-        if ($exception instanceof HttpExceptionInterface) {
-            $statutCode = $exception->getStatusCode();
-        } else {
-            $statutCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-        }
+        $statusCode = ($exception instanceof HttpExceptionInterface) ?
+            $exception->getStatusCode() :
+            Response::HTTP_INTERNAL_SERVER_ERROR;
+
         $message = [
-            "There was an error during the request. Here is the message error : "=>  $exception->getMessage(),
-            "Error code"=> $statutCode
+            "There was an error during the request. Here is the message error : " => $exception->getMessage(),
+            "Error code" => $statusCode
         ];
         $data = $this->serializer->serialize($message, 'json');
 
-        $response = new JsonResponse($data, $statutCode, [], true);
+        $response = new JsonResponse($data, $statusCode, [], true);
 
         ($event->setResponse($response));
     }

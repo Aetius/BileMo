@@ -48,4 +48,21 @@ trait CustomerRepositoryTest
         return $customer;
     }
 
+    public function findDemoCustomer(KernelBrowser $client)
+    {
+        $kernel = $client->getKernel();
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $customer = $entityManager
+            ->getRepository(Customer::class)
+            ->findDemoCustomer();
+        return $customer;
+
+
+
+    }
+
 }

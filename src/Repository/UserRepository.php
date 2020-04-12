@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\User\UserDTO;
 use App\Entity\Customer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -21,20 +22,26 @@ class UserRepository extends ServiceEntityRepository
     }
 
 
-    public function findLast($customerId)
+    public function findLast(Customer $customer)
     {
-        return $this->findOneBy(["customer"=>$customerId], ['id'=> 'DESC']);
+        return $this->findOneBy(["customer"=>$customer], ['id'=> 'DESC']);
     }
 
-    public function findAllByCustomer(int $customerId)
+    public function findAllByCustomer(Customer $customer)
     {
-        return $this->findBy(["customer"=>$customerId], ['id'=> 'DESC']);
+        return $this->findBy(["customer"=>$customer], ['id'=> 'DESC']);
     }
 
-    public function findAllQuery($custumerId)
+    public function findAllByEmail(UserDTO $userDTO){
+
+        return $this->findBy(["email"=>$userDTO->email, "customer"=>$userDTO->customer]);
+    }
+
+    public function findAllQuery(Customer $customer)
     {
         return $this->createQueryBuilder('p')
-            ->where("p.customer = $custumerId ")
+            ->where("p.customer = :customer ")
+            ->setParameter('customer', $customer)
             ->orderBy('p.id', 'DESC')
             ->getQuery();
     }

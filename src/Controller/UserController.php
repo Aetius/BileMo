@@ -5,21 +5,20 @@ namespace App\Controller;
 
 
 use App\DTO\User\UserDTO;
-use App\Entity\Customer;
 use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Representation\DataRepresentation;
+use App\Representation\UsersRepresentation;
 use App\Services\ErrorsService;
 use App\Services\ResponseJson;
 use App\Services\UserService;
 use JMS\Serializer\SerializerInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
@@ -43,7 +42,7 @@ class UserController extends AbstractController
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
      *
-     *@SWG\Get(
+     * @SWG\Get(
      *    summary= "Show one user.",
      *    description = "This url allows you to view one of your user. You will have to define the parameter' Id",
      *    @SWG\Parameter(
@@ -67,15 +66,16 @@ class UserController extends AbstractController
      *    )
      *)
      * @Security(name="Bearer")
-     *
+     * @param User $user
+     * @return JsonResponse
      */
-    public function showOne(User $user, UserService $service)
+    public function showOne(User $user)
     {
         return $this->responseJson->show($user, ResponseJson::ONE);
     }
 
     /**
-     * @Route("/users/{id}", name="user_delete", methods={"DELETE"})
+     * @Route("/users/{id}", methods={"DELETE"}, name="user_delete")
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
      *
@@ -96,7 +96,9 @@ class UserController extends AbstractController
      *    )
      *)
      * @Security(name="Bearer")
-     *
+     * @param User $user
+     * @param UserService $service
+     * @return Response
      */
     public function delete(User $user, UserService $service)
     {
@@ -105,7 +107,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/users/{id}", name="user_update", methods={"PUT"})
+     * @Route("/users/{id}", methods={"PUT"}, name="user_update")
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
      *
@@ -155,13 +157,18 @@ class UserController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
-     *
+     * @param User $user
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @param UserService $service
+     * @param ErrorsService $errorsService
+     * @return JsonResponse
      */
     public function update(User $user, SerializerInterface $serializer, Request $request, UserService $service,
                            ErrorsService $errorsService)
     {
         $dto = $serializer->deserialize($request->getContent(), UserDTO::class, 'json');
-        $errors = $errorsService->validate($dto, "Create");
+        $errors = $errorsService->validate($dto, ["Create", "Default"]);
 
         if ($errors == null) {
             $user = $service->update($dto, $user);
@@ -169,11 +176,10 @@ class UserController extends AbstractController
             return $this->responseJson->show($user, ResponseJson::ONE);
         }
         return $this->responseJson->failed($errors, ResponseJson::ONE);
-
     }
 
     /**
-     * @Route("/users/create", name="user_create", methods={"POST"})
+     * @Route("/users", methods={"POST"}, name="user_create")
      * @IsGranted("ROLE_USER")
      *
      *  * @SWG\Post(
@@ -215,17 +221,22 @@ class UserController extends AbstractController
      *
      * @Security(name="Bearer")
      *
+     *
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param UserService $service
+     * @param ErrorsService $errorsService
+     * @return JsonResponse
      */
-    public function create(Request $request, SerializerInterface $serializer, UserService $service, ErrorsService $errorsService,
-        DataRepresentation $representation)
+    public function create(Request $request, SerializerInterface $serializer, UserService $service,
+                           ErrorsService $errorsService)
     {
         $dto = $serializer->deserialize($request->getContent(), UserDTO::class, 'json');
-        $errors = $errorsService->validate($dto, "Create");
+        $dto->customer = $this->getUser();
+        $errors = $errorsService->validate($dto, ["Create", "Default"]);
 
         if ($errors == null) {
-            $customer = $this->getUser();
-            /**@var Customer $customer */
-            $user = $service->create($dto, $customer);
+            $user = $service->create($dto);
             $service->save($user);
             return $this->responseJson->created($user, ResponseJson::ONE);
         }
@@ -233,7 +244,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/users", name="user_show_all", methods={"GET"})
+     * @Route("/users", methods={"GET"}, name="user_show_all")
      * @IsGranted("ROLE_USER")
      *
      *  *@SWG\Get(
@@ -267,15 +278,13 @@ class UserController extends AbstractController
      *
      * @Security(name="Bearer")
      *
+     *
+     * @param UsersRepresentation $representation
+     * @return JsonResponse
      */
-    public function showAll(UserRepository $repository, PaginatorInterface $paginator, Request $request, DataRepresentation $representation)
+    public function showAll(UsersRepresentation $representation)
     {
-        $usersQuery = $paginator->paginate(
-            $repository->findAllQuery($this->getUser()->getId()),
-            $request->query->getInt('page', 1),
-            $request->query->getInt('limit', self::LIMIT_USER_PER_PAGE)
-        );
-        $users = $representation->showAll($usersQuery, $request->get("_route"));
+        $users = $representation->showAll();
         return $this->responseJson->show($users, ResponseJson::ALL);
     }
 

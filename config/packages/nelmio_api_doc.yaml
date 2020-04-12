@@ -1,6 +1,8 @@
 nelmio_api_doc:
     areas:
-        path_patterns: [ ^/api(?!/doc$) ]
+        path_patterns:
+            - ^/api(?!/token|/doc)
+
 
     documentation:
         host: 127.0.0.1:8000

@@ -34,12 +34,11 @@ class PhoneControllerTest extends WebTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
-        $this->assertCount(PhoneController::LIMIT_PHONE_PER_PAGE, $deserialized);
+        $this->assertCount(PhoneController::LIMIT_PHONE_PER_PAGE, $deserialized["_embedded"]["items"]);
     }
 
     public function testTargetShowOnePhone()
     {
-        //$this->connexion();
         $this->setAuthorisation($this->client);
         $this->client->request('GET', '/api/phones/2');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
@@ -54,12 +53,5 @@ class PhoneControllerTest extends WebTestCase
         $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
     }
-
-    /*protected function connexion()
-    {
-        $login = new Connexion();
-        $token = $login->login($this->client);
-        $this->client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token['token']));
-    }*/
 
 }

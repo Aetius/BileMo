@@ -9,6 +9,7 @@ use App\Tests\Repository\CustomerRepositoryTest;
 use App\Tests\Repository\UserRepositoryTest;
 use App\Tests\Security\Connexion;
 use App\Tests\Services\Manager;
+use App\Tests\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -18,6 +19,7 @@ class UserControllerTest extends WebTestCase
     use CustomerRepositoryTest;
     use Manager;
     use Connexion;
+    use UserService;
 
     /**
      *@var  KernelBrowser
@@ -31,16 +33,18 @@ class UserControllerTest extends WebTestCase
     }
 
 
-/////////////// Path User Tests /////////////////////////
+/////////////// Show User Tests /////////////////////////
 
     public function testTargetShowUsers()
     {
-        $this->setAuthorisation($this->client);
+        $customer = $this->setAuthorisation($this->client);
         $this->client->request('GET', "/api/users");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
-        $this->assertCount(UserController::LIMIT_USER_PER_PAGE, $deserialized);
+        $users = $this->findAllUser($this->client, $customer);
+        $nbUsers = $this->defineNumberOfUsersByCustomer($users);
+        $this->assertCount($nbUsers, $deserialized["_embedded"]["items"]);
     }
 
     public function testTargetShowOneUser()
@@ -90,24 +94,25 @@ class UserControllerTest extends WebTestCase
 ////////////Create User Tests ////////////////////////
     public function testNewUserOk()
     {
-        $this->setAuthorisation($this->client);
+        $customer = $this->setAuthorisation($this->client);
         $content = '{
-                "lastname": "John",
-                "firstname": "Doe",
-                "email": "J.Doe@gmail.com"
+                "lastname": "Doe",
+                "firstname": "John",
+                "email": "J.Doe@test.com"
                 }';
 
         $this->client->request(
             'POST',
-            '/api/users/create',
+            '/api/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             $content
         );
+
         $this->assertEquals(201,  $this->client->getResponse()->getStatusCode());
         $deserialized = $this->deserialize($this->client);
-        $this->assertTrue(11 === $deserialized['id']);
+        $this->assertTrue(12 === $deserialized['id']);
         $this->assertJson($this->client->getResponse()->getContent());
     }
 
@@ -116,7 +121,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->setAuthorisation($this->client);
         $this->client->request(
             'POST',
-            '/api/users/create',
+            '/api/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -129,6 +134,26 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(400,  $this->client->getResponse()->getStatusCode());
     }
 
+    public function testNewUserNokEmailAlreadyUsed()
+    {
+        $customer = $this->findDemoCustomer($this->client);
+        $this->setAuthorisation($this->client, $customer);
+        $this->client->request(
+            'POST',
+            '/api/users',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            '{
+                "lastname": "Doe",
+                "firstname": "John",
+                "email": "John.Doe@yahoo.fr"
+                }'
+        );
+        $this->assertEquals(400,  $this->client->getResponse()->getStatusCode());
+
+    }
+
     public function testNewUserWithoutLogin()
     {
         $content = '{
@@ -139,7 +164,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/users/create',
+            '/api/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
