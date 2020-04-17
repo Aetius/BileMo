@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 
 
 use App\Controller\PhoneController;
+use App\Tests\Config\Config;
 use App\Tests\Repository\CustomerRepositoryTest;
 use App\Tests\Security\Connexion;
 use App\Tests\Services\Manager;
@@ -30,7 +31,7 @@ class PhoneControllerTest extends WebTestCase
     public function testTargetShowPhones()
     {
         $this->setAuthorisation($this->client);
-        $this->client->request('GET', '/api/phones');
+        $this->client->request('GET', Config::VERSION.'/phones');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
@@ -40,7 +41,7 @@ class PhoneControllerTest extends WebTestCase
     public function testTargetShowOnePhone()
     {
         $this->setAuthorisation($this->client);
-        $this->client->request('GET', '/api/phones/2');
+        $this->client->request('GET', Config::VERSION.'/phones/2');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
@@ -49,7 +50,7 @@ class PhoneControllerTest extends WebTestCase
 
     public function testTargetShowPhonesWithoutLogin()
     {
-        $this->client->request('GET', '/api/phones');
+        $this->client->request('GET', Config::VERSION.'/phones');
         $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
     }

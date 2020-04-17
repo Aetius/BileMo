@@ -6,16 +6,24 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Representation\DataRepresentation;
+use App\Representation\OneEntityRepresentation;
 use App\Representation\PhonesRepresentation;
 use App\Services\ResponseJson;
+use App\Versionning\Version;
+use JMS\Serializer\Annotation as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\CompiledUrlGenerator;
+use Symfony\Component\Routing\RequestContext;
+
 
 class PhoneController extends AbstractController
 {
@@ -34,6 +42,8 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones/{id}", methods={"GET"}, name="phone_show_one")
      * @IsGranted("ROLE_USER")
+     * @Version( version = {"v2"})
+     * @Cache(public=true, vary={"Authorization"})
      *
      * @SWG\Get(
      *    summary= "Show one phone.",
@@ -45,6 +55,13 @@ class PhoneController extends AbstractController
      *          description="Define the id of the phone in display.",
      *          required=true,
      *      ),
+     *    @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
+     *          required=true,
+     *      ),
      *    produces={
      *        "application/json"
      *    },
@@ -53,7 +70,7 @@ class PhoneController extends AbstractController
      *        response="200",
      *        description="Show one article.",
      *        @SWG\Schema(
-     *             type="array",
+     *             type="object",
      *             @SWG\Items(ref=@Model(type=Phone::class, groups={"detail"}))
      *         )
      *    )
@@ -65,15 +82,19 @@ class PhoneController extends AbstractController
      * @param AdapterInterface $adapter
      * @return JsonResponse
      */
-    public function showOne(Phone $phone)
+    public function showOne(Phone $phone, OneEntityRepresentation $representation)
     {
-        return $this->responseJson->show($phone, ResponseJson::ONE);
+        $phoneRepresentation = $representation->shwoOne($phone);
+        return $this->responseJson->show($phoneRepresentation, ResponseJson::ONE);
     }
 
 
     /**
      * @Route("/phones", methods={"GET"}, name="phone_show_all")
      * @IsGranted("ROLE_USER")
+     * @Version( version = {"v2"})
+     * @Cache(public=true, vary={"Authorization"})
+     *
      *
      * @SWG\Get(
      *    summary= "Show all the phones",
@@ -88,6 +109,13 @@ class PhoneController extends AbstractController
      *            type="integer",
      *            description="Allow you to show all the phones by brand"
      *        ),
+     *     @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
+     *          required=true,
+     *      ),
      *      @SWG\Parameter(
      *            name="keyword",
      *            in="query",

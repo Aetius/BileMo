@@ -51,7 +51,7 @@ class PhonesRepresentation
             $this->request->query->getInt('page', 1),
             $this->request->query->getInt('limit', self::LIMIT_PHONE_PER_PAGE)
         );
-        return $this->paginationCollection($phonesQuery, $this->request->get("_route"));
+        return $this->paginationCollection($phonesQuery);
     }
 
 }

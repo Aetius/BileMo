@@ -1,7 +1,9 @@
 controllers:
     resource: ../../src/Controller/
     type: annotation
-    prefix: /api
+    prefix: /api/{version}
+    requirements:
+        version: v1|v2|v3
 
 kernel:
     resource: ../../src/Kernel.php
