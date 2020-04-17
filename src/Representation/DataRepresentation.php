@@ -6,7 +6,6 @@ namespace App\Representation;
 
 use Hateoas\Representation\CollectionRepresentation;
 use Hateoas\Representation\PaginatedRepresentation;
-use Hateoas\Representation\RouteAwareRepresentation;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
 trait DataRepresentation
@@ -26,18 +25,6 @@ trait DataRepresentation
             true,
             null
         );
-        return $paginatedCollection;
-    }
-
-    public function paginationEntity($data)
-    {
-        $paginatedCollection = new RouteAwareRepresentation(
-            $data->ressources,
-            $data->route,
-            $data->parameters,
-            true
-        );
-
         return $paginatedCollection;
     }
 

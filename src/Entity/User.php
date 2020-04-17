@@ -15,6 +15,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *
  *      href = @Hateoas\Route(
  *          "user_show_one",
+ *          absolute = true,
  *          parameters = { "id" = "expr(object.getId())" }
  *     ),
  *     embedded= @Hateoas\Embedded(

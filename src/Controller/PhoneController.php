@@ -6,11 +6,9 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Representation\DataRepresentation;
-use App\Representation\OneEntityRepresentation;
 use App\Representation\PhonesRepresentation;
 use App\Services\ResponseJson;
 use App\Versionning\Version;
-use JMS\Serializer\Annotation as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -19,10 +17,7 @@ use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\CompiledUrlGenerator;
-use Symfony\Component\Routing\RequestContext;
 
 
 class PhoneController extends AbstractController
@@ -82,10 +77,9 @@ class PhoneController extends AbstractController
      * @param AdapterInterface $adapter
      * @return JsonResponse
      */
-    public function showOne(Phone $phone, OneEntityRepresentation $representation)
+    public function showOne(Phone $phone)
     {
-        $phoneRepresentation = $representation->shwoOne($phone);
-        return $this->responseJson->show($phoneRepresentation, ResponseJson::ONE);
+        return $this->responseJson->show($phone, ResponseJson::ONE);
     }
 
 
