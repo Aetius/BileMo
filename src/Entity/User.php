@@ -5,20 +5,23 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  *
  * @Hateoas\Relation(
  *      "self",
+ *
+ *
  *      href = @Hateoas\Route(
  *          "user_show_one",
- *          parameters = { "id" = "expr(object.getId())" }),
- *     embedded="expr(object.getCustomer())",
- *     exclusion = @Hateoas\Exclusion(excludeIf = "expr(object.getCustomer() == null)")
+ *          absolute = true,
+ *          parameters = { "id" = "expr(object.getId())" }
+ *     ),
+ *     embedded= @Hateoas\Embedded(
+ *          "expr(object.getCustomer())",
+ *         exclusion = @Hateoas\Exclusion(excludeIf = "expr(object.getCustomer() == null)"),
+ *         exclusion = @Hateoas\Exclusion(excludeIf = "expr('groups' === 'list')"),
  *      )
  * )
  *

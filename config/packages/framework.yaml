@@ -16,3 +16,7 @@ framework:
         log: true
 
 nelmio_api_doc: ~
+
+bazinga_hateoas:
+    serializer:
+        json: Custom_serializer

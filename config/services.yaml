@@ -3,7 +3,6 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
-parameters:
 
 services:
     # default configuration for services in *this* file
@@ -29,11 +28,15 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
-    App\Listener\Response\CacheResponseListener:
+    App\Listener\Versionning\VersioningListener:
         tags:
-            - { name: kernel.event_listener, event: kernel.response }
+            - { name: kernel.event_listener, event: kernel.controller_arguments }
+        arguments:
+            ['@Doctrine\Common\Annotations\Reader', 'version']
 
     App\fixtures\Faker\Provider\CustomerProvider: ~
     App\DataFixtures\Faker\Processor\CustomerProcessor: ~
 
+    Custom_serializer:
+        class: App\Services\CustomSerializer
 

@@ -8,14 +8,17 @@ use App\Entity\Phone;
 use App\Representation\DataRepresentation;
 use App\Representation\PhonesRepresentation;
 use App\Services\ResponseJson;
+use App\Versionning\Version;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+
 
 class PhoneController extends AbstractController
 {
@@ -34,6 +37,8 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones/{id}", methods={"GET"}, name="phone_show_one")
      * @IsGranted("ROLE_USER")
+     * @Version( version = {"v2"})
+     * @Cache(public=true, vary={"Authorization"})
      *
      * @SWG\Get(
      *    summary= "Show one phone.",
@@ -45,6 +50,13 @@ class PhoneController extends AbstractController
      *          description="Define the id of the phone in display.",
      *          required=true,
      *      ),
+     *    @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
+     *          required=true,
+     *      ),
      *    produces={
      *        "application/json"
      *    },
@@ -53,7 +65,7 @@ class PhoneController extends AbstractController
      *        response="200",
      *        description="Show one article.",
      *        @SWG\Schema(
-     *             type="array",
+     *             type="object",
      *             @SWG\Items(ref=@Model(type=Phone::class, groups={"detail"}))
      *         )
      *    )
@@ -74,6 +86,9 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones", methods={"GET"}, name="phone_show_all")
      * @IsGranted("ROLE_USER")
+     * @Version( version = {"v2"})
+     * @Cache(public=true, vary={"Authorization"})
+     *
      *
      * @SWG\Get(
      *    summary= "Show all the phones",
@@ -88,6 +103,13 @@ class PhoneController extends AbstractController
      *            type="integer",
      *            description="Allow you to show all the phones by brand"
      *        ),
+     *     @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
+     *          required=true,
+     *      ),
      *      @SWG\Parameter(
      *            name="keyword",
      *            in="query",

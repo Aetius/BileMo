@@ -41,7 +41,7 @@ trait Connexion
      */
     public function setAuthorisation(KernelBrowser $client, $customer = null)
     {
-        $this->customer = !is_null($customer) ? $customer : $this->findLastCustomer($client);
+        $this->customer = ($customer !== null) ? $customer : $this->findLastCustomer($client);
 
         $this->loginRequest($this->client);
         $token = $this->deserialize($client);

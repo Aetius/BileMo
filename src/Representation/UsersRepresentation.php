@@ -6,11 +6,11 @@ namespace App\Representation;
 
 use App\Entity\Customer;
 use App\Repository\UserRepository;
-use App\Services\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Security;
 
 class UsersRepresentation
 {
@@ -26,27 +26,30 @@ class UsersRepresentation
      */
     private $repository;
     /**
-     * @var Paginator
+     * @var PaginatorInterface
      */
     private $paginator;
     /**
      * @var ContainerInterface
      */
     private $container;
+    /**
+     * @var Security
+     */
+    private $security;
 
     public function __construct(RequestStack $requestStack, UserRepository $repository, PaginatorInterface $paginator,
-                                ContainerInterface $container)
+                                Security $security)
     {
-
         $this->request = $requestStack->getCurrentRequest();
         $this->repository = $repository;
         $this->paginator = $paginator;
-        $this->container = $container;
+        $this->security = $security;
     }
 
     public function showAll()
     {
-        $customer = $this->container->get('security.token_storage')->getToken()->getUser();
+        $customer = $this->security->getUser();
         /** @var Customer $customer */
         $usersQuery = $this->paginator->paginate(
             $this->repository->findAllQuery($customer),
@@ -54,7 +57,7 @@ class UsersRepresentation
             $this->request->query->getInt('limit', self::LIMIT_USER_PER_PAGE)
         );
 
-        return $this->paginationCollection($usersQuery, $this->request->get("_route"));
+        return $this->paginationCollection($usersQuery);
     }
 
 }

@@ -10,9 +10,11 @@ use App\Representation\UsersRepresentation;
 use App\Services\ErrorsService;
 use App\Services\ResponseJson;
 use App\Services\UserService;
+use App\Versionning\Version;
 use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,6 +43,9 @@ class UserController extends AbstractController
      * @Route("/users/{id}", name="user_show_one", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
+     * @Version( version = {"v1"})
+     * @Cache(public=true, vary={"Authorization"})
+     *
      *
      * @SWG\Get(
      *    summary= "Show one user.",
@@ -50,6 +55,13 @@ class UserController extends AbstractController
      *          in="path",
      *          type="integer",
      *          description="Define the id of the user in display.",
+     *          required=true,
+     *      ),
+     *      @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
      *          required=true,
      *      ),
      *    produces={
@@ -66,6 +78,8 @@ class UserController extends AbstractController
      *    )
      *)
      * @Security(name="Bearer")
+     *
+     *
      * @param User $user
      * @return JsonResponse
      */
@@ -78,6 +92,8 @@ class UserController extends AbstractController
      * @Route("/users/{id}", methods={"DELETE"}, name="user_delete")
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
+     * @Version( version = {"v1"})
+     *
      *
      * @SWG\Delete(
      *    summary= "Delete one user.",
@@ -89,6 +105,13 @@ class UserController extends AbstractController
      *          description="Define the id of the user in display.",
      *          required=true,
      *      ),
+     *      @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
+     *          required=true,
+     *      ),
      *
      *    @SWG\Response(
      *        response="204",
@@ -96,6 +119,10 @@ class UserController extends AbstractController
      *    )
      *)
      * @Security(name="Bearer")
+     *
+     *
+     *
+     *
      * @param User $user
      * @param UserService $service
      * @return Response
@@ -110,6 +137,7 @@ class UserController extends AbstractController
      * @Route("/users/{id}", methods={"PUT"}, name="user_update")
      * @IsGranted("ROLE_USER")
      * @IsGranted( "CUSTOMER_ACCESS", subject="user")
+     * @Version( version = {"v1"})
      *
      *
      * @SWG\Put(
@@ -120,6 +148,13 @@ class UserController extends AbstractController
      *          in="path",
      *          type="integer",
      *          description="Define the id of the user in display.",
+     *          required=true,
+     *      ),
+     *      @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
      *          required=true,
      *      ),
      *
@@ -157,6 +192,9 @@ class UserController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
+     *
+     *
+     *
      * @param User $user
      * @param SerializerInterface $serializer
      * @param Request $request
@@ -181,6 +219,8 @@ class UserController extends AbstractController
     /**
      * @Route("/users", methods={"POST"}, name="user_create")
      * @IsGranted("ROLE_USER")
+     * @Version( version = {"v1"})
+     *
      *
      *  * @SWG\Post(
      *    summary= "Create a user.",
@@ -199,6 +239,13 @@ class UserController extends AbstractController
      *             )
      *         ),
      *     ),
+     *      @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
+     *          required=true,
+     *      ),
      *
      *    produces={
      *        "application/json"
@@ -220,6 +267,7 @@ class UserController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
+     *
      *
      *
      * @param Request $request
@@ -246,6 +294,9 @@ class UserController extends AbstractController
     /**
      * @Route("/users", methods={"GET"}, name="user_show_all")
      * @IsGranted("ROLE_USER")
+     * @Version( version = {"v1"})
+     * @Cache(public=true, vary={"Authorization"})
+     *
      *
      *  *@SWG\Get(
      *    summary= "Show all users linked to your account.",
@@ -253,6 +304,13 @@ class UserController extends AbstractController
      *    produces={
      *        "application/json"
      *    },
+     *      @SWG\Parameter(
+     *          name="version",
+     *          in="path",
+     *          type="string",
+     *          description="Define the version of the application.",
+     *          required=true,
+     *      ),
      *
      *     @SWG\Parameter(
      *            name="page",
@@ -277,6 +335,7 @@ class UserController extends AbstractController
      *)
      *
      * @Security(name="Bearer")
+     *
      *
      *
      * @param UsersRepresentation $representation

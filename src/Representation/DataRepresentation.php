@@ -11,12 +11,12 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 trait DataRepresentation
 {
 
-    public function paginationCollection(PaginationInterface $data, string $route)
+    public function paginationCollection(PaginationInterface $data)
     {
         $paginatedCollection = new PaginatedRepresentation(
             new CollectionRepresentation( $data),
-            $route,
-            [],
+            $data->getRoute(),
+            $data->getParams(),
             $data->getCurrentPageNumber(),
             $data->getItemNumberPerPage(),
             $data->getTotalItemCount(),
