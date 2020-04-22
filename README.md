@@ -1,5 +1,8 @@
 
 # BilMeo API
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/626281b600be407f8dbab68bf7fb5b1f)](https://app.codacy.com/manual/Aetius/BileMo?utm_source=github.com&utm_medium=referral&utm_content=Aetius/BileMo&utm_campaign=Badge_Grade_Dashboard)
+
  
 This is an API project, developped with symfony 5.0.3. 
 With this API, you will have access to our list of phones, and you will be able to stock your users in our database. 
