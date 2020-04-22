@@ -6,6 +6,8 @@ namespace App\Listener\Versionning;
 
 use App\Versionning\Version;
 use Doctrine\Common\Annotations\Reader;
+use Nelmio\ApiDocBundle\Controller\DocumentationController;
+use Nelmio\ApiDocBundle\Controller\SwaggerUiController;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
@@ -41,7 +43,13 @@ class VersioningListener
         if (!$event->isMasterRequest()) {
             return;
         }
-        if (!is_array($controllers = $event->getController())){
+
+        $controllers = $event->getController();
+
+        if ($controllers instanceof SwaggerUiController || $controllers instanceof DocumentationController ){
+            return;
+        }
+        if (!is_array($controllers)){
             throw new \Laminas\Code\Exception\BadMethodCallException('This method is not available with your current version.');
         }
         if ($controllers[0] instanceof RedirectController){

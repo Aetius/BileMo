@@ -11,19 +11,13 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *
  * @Hateoas\Relation(
  *      "self",
- *
- *
  *      href = @Hateoas\Route(
  *          "user_show_one",
  *          absolute = true,
  *          parameters = { "id" = "expr(object.getId())" }
  *     ),
- *     embedded= @Hateoas\Embedded(
- *          "expr(object.getCustomer())",
- *         exclusion = @Hateoas\Exclusion(excludeIf = "expr(object.getCustomer() == null)"),
- *         exclusion = @Hateoas\Exclusion(excludeIf = "expr('groups' === 'list')"),
- *      )
  * )
+ *
  *
  * @Hateoas\Relation(
  *      "showAll",

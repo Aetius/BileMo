@@ -37,7 +37,7 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones/{id}", methods={"GET"}, name="phone_show_one")
      * @IsGranted("ROLE_USER")
-     * @Version( version = {"v2"})
+     * @Version( version = {"v1"})
      * @Cache(public=true, vary={"Authorization"})
      *
      * @SWG\Get(
@@ -86,7 +86,7 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones", methods={"GET"}, name="phone_show_all")
      * @IsGranted("ROLE_USER")
-     * @Version( version = {"v2"})
+     * @Version( version = {"v1"})
      * @Cache(public=true, vary={"Authorization"})
      *
      *

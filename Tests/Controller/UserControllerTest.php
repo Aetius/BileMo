@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 
 
 use App\Controller\UserController;
+use App\Tests\Config\Config;
 use App\Tests\Repository\CustomerRepositoryTest;
 use App\Tests\Repository\UserRepositoryTest;
 use App\Tests\Security\Connexion;
@@ -38,7 +39,7 @@ class UserControllerTest extends WebTestCase
     public function testTargetShowUsers()
     {
         $customer = $this->setAuthorisation($this->client);
-        $this->client->request('GET', "/api/users");
+        $this->client->request('GET', Config::VERSION."/users");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
@@ -52,7 +53,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->setAuthorisation($this->client);
         $userId = $this->findLastUser($this->client, $customer)->getId();
 
-        $this->client->request('GET', "/api/users/$userId");
+        $this->client->request('GET', Config::VERSION."/users/$userId");
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
         $deserialized = $this->deserialize($this->client);
@@ -61,7 +62,7 @@ class UserControllerTest extends WebTestCase
 
     public function testTargetShowOneUserWithoutLogin()
     {
-        $this->client->request('GET', "/api/users/2");
+        $this->client->request('GET', Config::VERSION."/users/2");
         $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
     }
@@ -72,7 +73,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->setAuthorisation($this->client);
         $user =$this->findLastUser($this->client, $customer);
 
-        $url = "/api/users/".$user->getId();
+        $url = Config::VERSION."/users/".$user->getId();
         $this->client->request('DELETE', $url);
         $newLastUser = $this->findLastUser($this->client, $customer);
         $this->assertEquals(204,  $this->client->getResponse()->getStatusCode());
@@ -84,7 +85,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->findLastCustomer($this->client);
         $user =$this->findLastUser($this->client, $customer);
 
-        $url = "/api/users/".$user->getId();
+        $url = Config::VERSION."/users/".$user->getId();
         $this->client->request('DELETE', $url);
         $this->assertEquals(401,  $this->client->getResponse()->getStatusCode());
     }
@@ -103,7 +104,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/users',
+            Config::VERSION.'/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -118,10 +119,10 @@ class UserControllerTest extends WebTestCase
 
     public function testNewUserNOK()
     {
-        $customer = $this->setAuthorisation($this->client);
+        $this->setAuthorisation($this->client);
         $this->client->request(
             'POST',
-            '/api/users',
+            Config::VERSION.'/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -140,7 +141,7 @@ class UserControllerTest extends WebTestCase
         $this->setAuthorisation($this->client, $customer);
         $this->client->request(
             'POST',
-            '/api/users',
+            Config::VERSION.'/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -164,7 +165,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/users',
+            Config::VERSION.'/users',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -180,7 +181,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->setAuthorisation($this->client);
         $user =$this->findLastUser($this->client, $customer);
 
-        $url = "/api/users/".$user->getId();
+        $url = Config::VERSION."/users/".$user->getId();
         $this->client->request(
             'PUT',
             $url,
@@ -203,7 +204,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->setAuthorisation($this->client);
         $user =$this->findLastUser($this->client, $customer);
 
-        $url = "/api/users/".$user->getId();
+        $url = Config::VERSION."/users/".$user->getId();
         $this->client->request(
             'PUT',
             $url,
@@ -223,7 +224,7 @@ class UserControllerTest extends WebTestCase
     {
         $this->setAuthorisation($this->client);
 
-        $url = "/api/users/500";
+        $url = Config::VERSION."/users/500";
         $this->client->request(
             'PUT',
             $url,
@@ -243,7 +244,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->setAuthorisation($this->client);
         $userId =$this->findLastUser($this->client, $customer)->getId();
 
-        $url = "/api/users/$userId";
+        $url = Config::VERSION."/users/$userId";
         $this->client->request(
             'PUT',
             $url,
@@ -261,7 +262,7 @@ class UserControllerTest extends WebTestCase
         $customer = $this->findLastCustomer($this->client);
         $user =$this->findLastUser($this->client, $customer);
 
-        $url = "/api/users/".$user->getId();
+        $url = Config::VERSION."/users/".$user->getId();
         $this->client->request(
             'PUT',
             $url,

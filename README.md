@@ -17,14 +17,14 @@ With this API, you will have access to our list of phones, and you will be able 
 
 - Create the database schema : php bin/console d:s:u --force
 
-- Then upload hautelook fixtures files with php bin/console d:f:l
+- Then upload hautelook fixtures files with php bin/console h:f:l
 
 ###To use this API :
 ##### General informations : 
 - Contact the administrator of this API. You will have your credentials to have granted access. 
-- Then go to the documentation to familiarize with the routes and options : 
+- Then, once the project installed, go to the documentation to familiarize with the routes and options : 
     The documentation is in https://127.0.0.1:8000/api/doc. 
-    If you use Postman (or another api), you will find the doc in https://127.0.0.1:8000/api/doc.json
+    If you use Postman (or another api plateform), you will find the doc in https://127.0.0.1:8000/api/doc.json
     
 - To access all of the others parts of this API, you have to be connected. 
 
@@ -36,5 +36,5 @@ With this API, you will have access to our list of phones, and you will be able 
 - Then to access all the others pages, you will have to add the $token in a header "Authorization": "Bearer $token"
 
 ###About the cache system
-A cache system is installed. If you want to disable it, you just have to go in the config\services.yaml and comment "App\Listener\Response\CacheResponseListener:", and comment the lign 25 in public/index.php. 
+A cache system is installed. If you want to disable it, you just have to go in the public\index.php and comment the lign 25 to 27 in public/index.php. 
 The cache system put in cache all the GET request. 

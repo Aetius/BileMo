@@ -6,6 +6,6 @@ namespace App\Tests\Config;
 
 class Config
 {
-    const VERSION = "/api/v2";
+    const VERSION = "/api/v1";
 
 }
