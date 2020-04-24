@@ -17,14 +17,6 @@ class CustomSerializer extends JsonHalSerializer
         foreach ($links as $link) {
             $serializedLinks[$link->getRel()] = $link->getHref();
         }
-
         $visitor->visitProperty(new StaticPropertyMetadata(self::class, '_links', $serializedLinks), $serializedLinks);
-
     }
-
-
-
-
-
-
 }

@@ -7,7 +7,6 @@ namespace App\Representation;
 use App\Entity\Customer;
 use App\Repository\UserRepository;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Security;
@@ -29,10 +28,6 @@ class UsersRepresentation
      * @var PaginatorInterface
      */
     private $paginator;
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
     /**
      * @var Security
      */

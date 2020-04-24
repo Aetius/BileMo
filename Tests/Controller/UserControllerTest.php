@@ -95,7 +95,7 @@ class UserControllerTest extends WebTestCase
 ////////////Create User Tests ////////////////////////
     public function testNewUserOk()
     {
-        $customer = $this->setAuthorisation($this->client);
+        $this->setAuthorisation($this->client);
         $content = '{
                 "lastname": "Doe",
                 "firstname": "John",
